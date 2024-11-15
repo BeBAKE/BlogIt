@@ -1,0 +1,29 @@
+{
+  "name": "websocket",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bash ./node_modules/typescript-runner/tsRunner.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@bebake/blogit-common": "^1.0.9",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/pg": "^8.11.10",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.0",
+    "socket.io": "^4.8.0",
+    "url": "^0.11.4"
+  },
+  "description": "",
+  "devDependencies": {
+    "typescript-runner": "^1.0.0"
+  }
+}

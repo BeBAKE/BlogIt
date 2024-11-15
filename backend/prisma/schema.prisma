@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id       String     @id @default(uuid())
+  fullName String
+  email    String     @unique
+  password String
+  blogs    Blog[]
+  Bookmark Bookmark[]
+  drafts   Draft[]
+}
+
+model Blog {
+  id           String     @id @unique
+  summaryTitle String     @db.VarChar
+  summaryBody  String     @db.VarChar
+  title        Json       @db.Json
+  body         Json       @db.Json
+  authorId     String
+  authorName   String
+  createdAt    DateTime   @default(now())
+  user         User       @relation(fields: [authorId], references: [id])
+  Bookmark     Bookmark[]
+}
+
+model Draft {
+  id         String   @id @unique
+  title      Json     @db.Json
+  body       Json     @db.Json
+  authorId   String
+  authorName String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [authorId], references: [id], onDelete: Cascade, map: "Draft_authorId_fkey")
+}
+
+// model Bookmark {
+//   id           String   @id
+//   summaryTitle String   @db.VarChar
+//   summaryBody  String   @db.VarChar
+//   authorName   String
+//   createdAt    DateTime
+//   authorId     String
+//   bookmarkedAt DateTime @default(now())
+//   user         User     @relation(fields: [authorId], references: [id], onDelete: Cascade, map: "Bookmark_authorId_fk")
+// }
+model Bookmark {
+  id           String   @id
+  userId       String //means the user who has bookmarked it
+  blogId       String
+  bookmarkedAt DateTime @default(now())
+  blog         Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade, map: "Bookmark_blogId_fk")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Bookmark_userId_fk")
+}
+
+// between Draft and Blog , only one exists at a time

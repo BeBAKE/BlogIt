@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Bookmark" ALTER COLUMN "bookmarkedAt" SET DEFAULT CURRENT_TIMESTAMP;

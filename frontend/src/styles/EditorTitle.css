@@ -1,0 +1,83 @@
+* {
+  margin : 0px;
+  padding : 0px;
+  box-sizing: border-box;
+}
+#title .ql-editor {
+  font-family: 'Charter', serif;
+  font-size: 36px;
+  font-weight: bold;
+  white-space: normal;
+  word-break: break-word;
+  margin-bottom: 0.75rem;
+  outline: none;
+}
+#body .ql-editor {
+  font-family: 'Charter', serif;
+  font-size: 1.23rem;
+  line-height: 32px;
+  word-break: break-word;
+  white-space: normal;
+  letter-spacing: 0.03em;
+  outline: none;
+}
+/* for the tags not mentioned below*/
+/* #body .ql-editor * {
+  margin-bottom: 24px;
+} */
+
+#body .ql-editor p {
+  margin-bottom : 24px;
+}
+#body .ql-editor h2 {
+  margin-top: 28px;
+  margin-bottom : 28px;
+}
+#body .ql-editor h3 {
+  margin-top: 28px;
+  margin-bottom: 28px;
+}
+#body .ql-editor ol {
+  margin-bottom : 24px;
+}
+#body .ql-editor ul {
+  margin-bottom : 24px;
+}
+#body .ql-editor li {
+  margin-bottom : 12px;
+}
+#body .ql-editor blockquote {
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+  color: gray;
+}
+#body .ql-editor span {
+  margin-bottom: 24px;
+}
+
+/* .ql-bubble .ql-editor .ql-code-block-container {*/
+.ql-code-block-container {
+  margin : 24px auto;
+  color: white;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background-color: #8f8f8f;
+  background-image: linear-gradient(315deg, #7b7b7b 0%, #576574 74%);
+}
+
+#title .ql-tooltip {
+  z-index: 1;
+}
+
+/* .ql-picker-label .ql-active{
+  background-color: red;
+} */
+
+.ql-color{
+  margin-top : 2px;
+}
+
+/* for the ReadOnlyEditor */
+.ql-container.ql-snow {
+  border : none
+}

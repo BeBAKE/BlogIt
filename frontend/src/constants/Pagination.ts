@@ -1,0 +1,1 @@
+export const MaxPageNumbers : number = 7
