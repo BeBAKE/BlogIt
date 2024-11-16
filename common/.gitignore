@@ -1,5 +1,6 @@
 # prod
 dist/
+test.js
 
 # dev
 .yarn/
