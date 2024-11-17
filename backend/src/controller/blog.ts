@@ -34,11 +34,13 @@ export const getBlog = async(c:Context)=>{
 //? per page 10 blogs  
 export const getAllBlog = async(c:Context)=>{
   try {
+    const authorId = c.get("authorId") // it is userId
     const prisma = await getPrisma(c.env.DATABASE_URL)
     const { page } = c.req.query()
     const take = 10;
     const skip = page ? (Number(page)-1)*take : 0
 
+    //Select * , can cause speed issues
     const blogs = await prisma.blog.findMany({
       select : {
         id : true,
@@ -47,10 +49,16 @@ export const getAllBlog = async(c:Context)=>{
         createdAt : true,
         authorId : true,
         authorName : true,
+        Bookmark : {
+          where : {
+            userId : authorId
+          }
+        }
       },
       take : take,
       skip : skip,
     })
+
     return c.json({
       success : true,
       message : page ? "Post fetched successfully" : "Warning! Page number missing",
@@ -60,40 +68,42 @@ export const getAllBlog = async(c:Context)=>{
         itemsPerPage : take
       }
     }, 201 )
+
   } catch (error) {
+    console.log(error)
     return c.json({success : false,message : "Internal Server Error"},500)
   }
 }
 
 // for simple blogs ( not for the quill one)
-export const updateBlog = async(c:Context)=>{
-  const {id} = c.req.param()
-  if(!id){
-    return c.json({success : false , message:"Invalid id"},400)
-  }
-  const {body,title} : UpdatePostType = c.get("parsedData")
-  if(!body && !title){
-    return c.json({success : false,message : "Invalid data"},400)
-  }
-  const authorId = c.get("authorId")
-  try {
-    const prisma = await getPrisma(c.env.DATABASE_URL)
-    const updatedBlog = await prisma.blog.update({
-      where : {
-        id : id,
-        authorId : authorId
-      },
-      data : {
-        body : body,
-        title : title
-      }
-    })
-    return c.json({success : true,message : "post updated successfully"},200)
-  } catch (error) {
-    return c.json({success : false,message : "Internal Server Error"},500)
-  }
+// export const updateBlog = async(c:Context)=>{
+//   const {id} = c.req.param()
+//   if(!id){
+//     return c.json({success : false , message:"Invalid id"},400)
+//   }
+//   const {body,title} : UpdatePostType = c.get("parsedData")
+//   if(!body && !title){
+//     return c.json({success : false,message : "Invalid data"},400)
+//   }
+//   const authorId = c.get("authorId")
+//   try {
+//     const prisma = await getPrisma(c.env.DATABASE_URL)
+//     const updatedBlog = await prisma.blog.update({
+//       where : {
+//         id : id,
+//         authorId : authorId
+//       },
+//       data : {
+//         body : body,
+//         title : title
+//       }
+//     })
+//     return c.json({success : true,message : "post updated successfully"},200)
+//   } catch (error) {
+//     return c.json({success : false,message : "Internal Server Error"},500)
+//   }
   
-}
+// }
 
 
 /*
@@ -115,7 +125,6 @@ export const updateBlog = async(c:Context)=>{
 */
 export const createBlog = async(c:Context)=>{
   try {
-    console.log("you have enetered the publishing area")
     const prisma = await getPrisma(c.env.DATABASE_URL)
     const { id } = c.req.param()
     const draft = await prisma.draft.findFirst({

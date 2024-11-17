@@ -1,13 +1,15 @@
 type FormButtonType = {
   label : string
-  onClick : ()=>Promise<void>,
+  onClick : ()=>void,
+  isFirstRequest : boolean
 }
-const FormButton = ({label,onClick}:FormButtonType) => {
+const FormButton = ({label,onClick,isFirstRequest}:FormButtonType) => {
   return <>
   <button
     type="submit"
+    disabled={!isFirstRequest}
     onClick={onClick}
-    className={` text-white w-full h-10 rounded-lg bg-black active:bg-slate-900`}>
+    className={`${isFirstRequest ? "active:bg-slate-900" : ""} text-white w-full h-10 rounded-lg  bg-black`}>
       {label}
   </button>
   </>

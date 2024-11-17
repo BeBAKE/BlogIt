@@ -21,7 +21,7 @@ const Signin = () => {
     email : "",
     password : "",
   })
-  let isFirstRequest = true
+  const [isFirstRequest, setIsFirstRequest] = useState<boolean>(true)
 
   const submit = useCallback(async()=>{
     if(!isFirstRequest) return
@@ -30,24 +30,28 @@ const Signin = () => {
       toast.error("Please Enter values")
       return ;
     }
-
-    isFirstRequest = false
-    const res = await toast.promise(
+    setIsFirstRequest(prev=>!prev)
+    toast.promise(
       async()=>{
-        const res = await axios({
-          url : `${BACKEND_URL}/api/v1/signup`,
-          method : "POST",
-          data : {
-            email : formData.email.trim(),
-            password : formData.password.trim(),
-            fullname : formData.fullname.trim()
-          }
-        })
-        localStorage.setItem("jwt",res.data.data)
-
-        const decoded = jwtDecode(localStorage.getItem("jwt") as string) as AutorJwtPayload
-        localStorage.setItem("userName",decoded.authorName)
-        navigate("/blogs")
+        try {
+          const res = await axios({
+            url : `${BACKEND_URL}/api/v1/signup`,
+            method : "POST",
+            data : {
+              email : formData.email.trim(),
+              password : formData.password.trim(),
+              fullname : formData.fullname.trim()
+            }
+          })
+          localStorage.setItem("jwt",res.data.data)
+  
+          const decoded = jwtDecode(localStorage.getItem("jwt") as string) as AutorJwtPayload
+          localStorage.setItem("userName",decoded.authorName)
+          navigate("/blogs") 
+        } catch (error:any) {
+          setIsFirstRequest(prev=>!prev)
+          throw new Error(error)
+        }
       },
       {
         pending: 'Registering User',
@@ -93,7 +97,7 @@ const Signin = () => {
             />
 
             
-            <FormButton label="Sign Up" onClick={submit}/>
+            <FormButton label="Sign Up" onClick={submit} isFirstRequest={isFirstRequest}/>
           </div>
 
 

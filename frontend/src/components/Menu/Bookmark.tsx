@@ -121,10 +121,10 @@ const Bookmark = ()=>{
               summaryTitle={e.blog.summaryTitle}
               summaryBody={e.blog.summaryBody}
               date={date}
-              documentId={e.blogId}
+              documentId={e.blogId}//also need in Bookmark.tsx to open that Blog
               authorName={e.blog.authorName}
               isBlog={false}
-              bookmarkId={e.id}
+              bookmarkId={e.id} // to send remove request
               />
             )
         })

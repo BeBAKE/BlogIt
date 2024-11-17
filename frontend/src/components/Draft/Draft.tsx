@@ -14,6 +14,7 @@ export type Drafts = {
 const Draft = ()=>{
   const [drafts , setDrafts] = useRecoilState(draftAtom)
   const [isError , setIsError] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(()=>{
     const fetchDraft = async()=>{
@@ -29,6 +30,7 @@ const Draft = ()=>{
         console.log(res.data.data);
         
         setDrafts(res.data.data)
+        setLoading(prev=>!prev)
       } catch (error) {
         console.log(error)
         setIsError(true)
@@ -57,9 +59,6 @@ const Draft = ()=>{
           const title = e.title ?? "Draft"
           const date = new Date((e.createdAt)).toString().split(" ")
           const daysAgo = (Math.floor(Date.now()) - (new Date(e.createdAt)).getTime())
-
-          console.log(Math.floor(daysAgo/(1000*60*60*24)))
-
           return ( 
             <DraftCard
               key={index}
@@ -74,10 +73,10 @@ const Draft = ()=>{
       }
 
       {/* Loader for cursor scrolling */}
-      {/* <div
+      <div
       className={`text-xl ${!loading ? "hidden" : "flex flex-row justify-center items-center"}`}>
         Loading...
-      </div> */}
+      </div>
 
     
     </div>

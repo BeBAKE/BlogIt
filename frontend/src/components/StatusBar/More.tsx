@@ -50,7 +50,7 @@ const More = memo((
     {
       isBlog 
       ? <BlogFloatingMenu/>
-      : <BookmarkFloatingMenu documentId={documentId} index={index}/>
+      : <BookmarkFloatingMenu bookmarkId={documentId} index={index}/>
     }
     
   </div>

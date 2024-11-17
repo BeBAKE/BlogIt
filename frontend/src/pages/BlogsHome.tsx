@@ -13,19 +13,22 @@ import { PaginationDetails, paginationDetailsAtom } from "../store/atoms/paginat
 import { currentPageAtom } from "../store/atoms/currentPage"
 import { BlogCardSkeleton } from "../components/skeleton/BlogCardSkeleton"
 
+import { Bookmarks } from "../components/Menu/Bookmark"
+
 export type BlogsType = {
   id : string,
   summaryTitle : string,
   summaryBody : string,
   authorName : string,
-  cratedAt : string,
+  createdAt : string,
   authorId : string,
-}[]
+  Bookmark : Bookmarks[]
+}
 
 // type BlogsType2 = (BlogsType[number] & {bookmark : string})[]
 
 const BlogsHome = ()=>{
-  const [blogs,setBlogs] = useState<BlogsType>([])
+  const [blogs,setBlogs] = useState<BlogsType[]>([])
   const setPaginationDetails = useSetRecoilState<PaginationDetails>(paginationDetailsAtom)
   const currentPage = useRecoilValue(currentPageAtom)
   const [loading ,setLoading ] = useState<boolean>(true)
@@ -40,7 +43,8 @@ const BlogsHome = ()=>{
           headers: {
             Authorization: `Bearer ${token}`,
           }
-        });        
+        });    
+        console.log(res.data.data)    
         setPaginationDetails(res.data.details)
         setBlogs(res.data.data)
         setLoading(false)
@@ -68,8 +72,9 @@ const BlogsHome = ()=>{
             return <BlogCardSkeleton index={index} key={index}/>
           })
         ) : (
-          blogs.map((e:any,index:number)=>{
+          blogs.map((e:BlogsType,index:number)=>{
             const date = new Date((e.createdAt)).toString().split(" ")
+            const isBookmarked = e.Bookmark.length>=1 ? true : false
             return ( 
               <BlogCard
                 id={e.id} // just to avoid error in BlogCard (no other purpose)
@@ -79,8 +84,11 @@ const BlogsHome = ()=>{
                 summaryBody={e.summaryBody}
                 date={date}
                 documentId={e.id}
-                onMoreClick={()=>{}}
-                authorName={e.authorName}/>)
+                authorName={e.authorName}
+                isBookmarked={isBookmarked}
+                bookmarkId={isBookmarked?e.Bookmark[0].id:undefined}
+                />
+              )
           })
         )       
       }

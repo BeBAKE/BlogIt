@@ -17,16 +17,13 @@ type DataForGetAll = {
   myCursor : Date // bookmarkedAt
 }
 
-// "2024-11-11 12:50:41.159"
-// "2024-11-11T12:50:41.159Z"
+// export const getBookmark = async(c:Context)=>{
+//   try {
 
-export const getBookmark = async(c:Context)=>{
-  try {
+//   } catch (error) {
 
-  } catch (error) {
-
-  }
-}
+//   }
+// }
 
 export const getAllBookmarks = async(c:Context)=>{
   try {
@@ -97,16 +94,16 @@ export const createBookmark = async(c:Context)=>{
 
     const bookmark = await prisma.bookmark.create({
       data : {
-        id : data.id,//bookmark's id 
+        id : id,//bookmark's id and is sent through route params
         userId : userId, // person who bookmarked it
-        blogId : id, // one which is sent through route params
+        blogId : data.id, // blog's id , send through body
       }
     })
 
     return c.json({success : true, message : "Bookmard added"},200)
     
   } catch (error) {
-    // if(error.code==='P2002') // unique id voilation
+    console.log("add bookmark : ",error)
     return c.json({success : false, message : "Internal Server Error"},500)
   }
 }
@@ -120,12 +117,13 @@ export const removeBookmark = async(c:Context)=>{
     }
     const bookmark = await prisma.bookmark.delete({
       where : {
-        id : id
+        id : id // bookmark's id
       }
     })
     return c.json({success : true, message : "bookmark removed"},200)
 
   } catch (error:any) {
+    console.log("remove : ",error)
     if(error.code==='P2025') return c.json({success : false,message : "bookmark not found"},404)
     return c.json({success : false, message : "Internal Server Error"},500)
   }

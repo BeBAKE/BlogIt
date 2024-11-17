@@ -8,21 +8,21 @@ import bookmarkFloatingMenuAtom from "../../store/atoms/bookmarkFloatingMenu"
 import { toast } from "react-toastify"
 
 interface BookmarkFloatingMenu {
-  documentId : string,
+  bookmarkId : string,
   index : number
 }
 
-const BookmarkFloatingMenu = ({documentId,index}:BookmarkFloatingMenu)=>{
+const BookmarkFloatingMenu = ({bookmarkId,index}:BookmarkFloatingMenu)=>{
   const [bookmarks, setBookmarks] = useRecoilState(BookmarkAtom)
   const [bookmarkFloatMenu, setBookmarkFloatMenu] = useRecoilState(bookmarkFloatingMenuAtom(index))
 
-  const arrow_up = {
-    width: "0px",
-    height: "0px",
-    borderLeft: "10px solid transparent",
-    borderRight: "10px solid transparent" ,
-    borderBottom: "10px solid"
-  }
+  // const arrow_up = {
+  //   width: "0px",
+  //   height: "0px",
+  //   borderLeft: "10px solid transparent",
+  //   borderRight: "10px solid transparent" ,
+  //   borderBottom: "10px solid"
+  // }
   const one = {
     // position: 'absolute',
     width: "0px",
@@ -72,17 +72,17 @@ const BookmarkFloatingMenu = ({documentId,index}:BookmarkFloatingMenu)=>{
     
     const token = localStorage.getItem("jwt")??"invalidToken"
     
-    // try {
-    //   await axios({
-    //     url : `${BACKEND_URL}/api/v1/blog/bookmark/${documentId}`,
-    //     method : 'delete',
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     }
-    //   })
-    // } catch (error) {
-    //   console.log(error)
-    // }
+    try {
+      await axios({
+        url : `${BACKEND_URL}/api/v1/blog/bookmark/${bookmarkId}`,
+        method : 'delete',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
 

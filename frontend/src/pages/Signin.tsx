@@ -24,31 +24,36 @@ const Signin = () => {
     email : "",
     password : ""
   })
-  let isFirstRequest = true
+  const [isFirstRequest, setIsFirstRequest] = useState<boolean>(true)
 
-  const submit = useCallback(async()=>{
+  const submit = useCallback(()=>{
     if(!isFirstRequest) return
     
     if(formData.email.length==0 || formData.password.length==0){
       toast.error("Please enter values")
       return ;
     }   
-    isFirstRequest = false
-    await toast.promise(
+    setIsFirstRequest(prev=>!prev)
+    toast.promise(
       async()=>{
-        const res = await axios({
-          url : `${BACKEND_URL}/api/v1/signin`,
-          method : "POST",
-          data : {
-            email : formData.email.trim(),
-            password : formData.password.trim(),
-          }
-        })   
-        localStorage.setItem("jwt",res.data.data)
-        const token = localStorage.getItem("jwt") as string
-        const decoded = jwtDecode(token) as AutorJwtPayload
-        localStorage.setItem("userName",decoded.authorName)        
-        navigate("/blogs")   
+        try {
+          const res = await axios({
+            url : `${BACKEND_URL}/api/v1/signin`,
+            method : "POST",
+            data : {
+              email : formData.email.trim(),
+              password : formData.password.trim(),
+            }
+          })   
+          localStorage.setItem("jwt",res.data.data)
+          const token = localStorage.getItem("jwt") as string
+          const decoded = jwtDecode(token) as AutorJwtPayload
+          localStorage.setItem("userName",decoded.authorName)        
+          navigate("/blogs")   
+        } catch (error:any) {
+          setIsFirstRequest(prev=>!prev)
+          throw new Error(error)
+        }
       },
       {
         pending: 'Signin in',
@@ -57,7 +62,7 @@ const Signin = () => {
       }
     )
 
-  },[formData])
+  },[formData,isFirstRequest])
 
   return (
     <div 
@@ -89,7 +94,7 @@ const Signin = () => {
               }}
             />
 
-            <FormButton label="Sign In" onClick={submit}/>
+            <FormButton label="Sign In" onClick={submit} isFirstRequest={isFirstRequest}/>
 
           </div>
 
