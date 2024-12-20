@@ -4,18 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { publishBtnStatusAtom } from "../../store/atoms/publishBtnStatus";
-import { BACKEND_URL } from "../../constants/backendURL";
+import { BACKEND_URL, S3_URL } from "../../constants/backendURL";
+import coverPhotoAtom from "../../store/atoms/coverPhotoAtom";
 
 export interface PublishBtnProp {
   documentId: string,
   titleQuill : Quill | undefined,
   bodyQuill : Quill | undefined,
+  // coverPhoto : Blob | undefined
 }
 
 
 const PublishBtn = ({documentId,titleQuill,bodyQuill}:PublishBtnProp)=>{
   const nav = useNavigate()
   const [ publishBtnStatus, setPublishBtnStatus] = useRecoilState(publishBtnStatusAtom)
+  const [coverPhoto,setCoverPhoto] = useRecoilState(coverPhotoAtom)
 
 
 
@@ -37,18 +40,34 @@ const PublishBtn = ({documentId,titleQuill,bodyQuill}:PublishBtnProp)=>{
         const data = {
           id : documentId,
           title : title as Delta,
-          body :body as Delta
+          body : body as Delta,
         }
-        const res=await axios(`${BACKEND_URL}/api/v1/blog/${documentId}`,{
+        const res = await axios(`${BACKEND_URL}/api/v1/blog/${documentId}`,{
           method : "post",
           headers : {
             Authorization : `Bearer ${localStorage.getItem("jwt")}`
           },
           data : data
         })
-        console.log("response from backend : ",res)
+
+        if(res.data.success && coverPhoto){
+          const formData = new FormData()
+          formData.append("coverPhoto",coverPhoto)
+          formData.append("id",documentId)
+          // here i omitted await - so that for image uplaod there shouldn't be any delay . 
+          // It causes problem - after publishing when screen goes back to the home page, to see the image of the new uploaded article, reload is required because by that time the express backend has not updated the image in the blog table 
+          axios(`${S3_URL}/upload`,{
+            method : "post",
+            data : formData,
+            headers : {
+              "Content-Type" : "multipart/form-data",
+              Authorization : `Bearer ${localStorage.getItem("jwt")}`
+            }
+          })
+        }
         toast.success("Hurray! Article publised 🎉")
         setPublishBtnStatus(false)
+        setCoverPhoto(undefined)
         nav("/blogs")
       } catch (error) {
         titleQuill.enable()

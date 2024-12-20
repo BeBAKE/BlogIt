@@ -2,8 +2,8 @@ import { CreatePostType } from "@bebake/blogit-common"
 import More from "../StatusBar/More"
 import ProfilePic from "../StatusBar/ProfilePic"
 import { useNavigate } from "react-router-dom"
-import { useState } from "react"
-import { BACKEND_URL } from "../../constants/backendURL"
+import { useEffect, useState } from "react"
+import { BACKEND_URL, S3_URL } from "../../constants/backendURL"
 import axios from "axios"
 import { toast } from "react-toastify"
 import { v4 as uuidv4 } from 'uuid';
@@ -13,9 +13,12 @@ export type BlogProps = {
   date:string[],
   documentId:string,
   authorName : string,
+  authorId : string,
   isBlog ?: boolean ,
   bookmarkId : string|undefined,
   isBookmarked ?: boolean
+  imageName ?: string
+  type ?: "PublishedBlog" | "Blog" | "Bookmark"
 } & CreatePostType
 
 type AxiosData = {
@@ -32,68 +35,68 @@ const BlogCard = ({
   date,
   documentId,
   authorName,
+  authorId,
   isBlog=true,
   bookmarkId,// used by BmFM.tsx to send remove req in Bookmark page and in case of BlogHome , those who have bookmark - it gives id , and those who doesn't it gives undefined
-  isBookmarked // boolean when from BlogHome , undefined - Bookmark
+  isBookmarked,// boolean when from BlogHome , undefined in case of Bookmark.tsx
+  imageName,
+  type // this is for the PublishedBlog. For publishedBlog ,isBlog is set to be false so that no Bookmark icon is not visible
 }:BlogProps)=>{
 
   const [toggleBookmark, setToggleBookmark] = useState<boolean|undefined>(isBookmarked)
+  const [uuid, setUUID] = useState(uuidv4())
   const navigate = useNavigate()
+  const [signedImage , setSignedImage] = useState(undefined)
+
+  useEffect(()=>{
+    if(!imageName) return
+    (async()=>{
+      try {
+        const res2 = await axios(`${S3_URL}/imageUrl/${imageName}`,{
+          method : "get",
+          headers : {
+            "Content-Type" : "multipart/form-data",
+            Authorization : `Bearer ${localStorage.getItem("jwt")}`
+          }
+        })
+        setSignedImage(res2.data.data) 
+      } catch (error) {
+        console.log(error)
+      }
+    })()
+  },[imageName])
+  
+  const bookmarkService = {
+    toggleBM : async(bookmarkId:string|undefined,documentId:string)=>{
+      const token = localStorage.getItem("jwt")
+      const config = {
+        headers : { Authorization : `Bearer ${token}`}
+      } 
+
+      return toggleBookmark
+        ? await axios.delete(`${BACKEND_URL}/api/v1/blog/bookmark/${bookmarkId}`,config)
+        : await axios.post(`${BACKEND_URL}/api/v1/blog/bookmark/${bookmarkId}`,{id : documentId},config)
+    }
+  }
 
   const onClickBookmark = async()=>{
     if(isBookmarked===undefined) return
 
-    const token = localStorage.getItem("jwt")??"invalidToken"
-    const axiosData : AxiosData = {
-      url : `${BACKEND_URL}/api/v1/blog/bookmark/${bookmarkId??uuidv4()}`,
-      method : toggleBookmark ? 'delete' : 'post',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    }
-
-    // try {
-    //   const toggle = !toggleBookmark
-    //   setToggleBookmark(toggle)
-    //   if(toggleBookmark){
-    //     await axios(axiosData)
-    //   }else{
-    //     axiosData.data = { id : documentId }
-    //     await axios(axiosData)
-    //   }
-    // } catch (error) {
-    //   console.log(error)
-    //   toast.error("error from server")
-    // }
-
-    if(toggleBookmark){
-      setToggleBookmark(false)
-      try {
-        await axios(axiosData)
-      } catch (error) {
-        console.log(error)
-        toast.error("error from server")
-      }
-    }
-    else{
-      setToggleBookmark(true)
-      axiosData.data = { id : documentId }
-      try {
-        await axios(axiosData)
-      } catch (error) {
-        console.log(error)
-        // toast.error("error from server")
-      }
+    try {
+      setToggleBookmark(!toggleBookmark)
+      await bookmarkService.toggleBM(bookmarkId??uuid,documentId)
+    } catch (error) {
+      console.log(error)
+      toast.error("error from server")
     }
   }
-  
-  
   return (
-  <section
-    className={`h-fit py-10 flex flex-row items-center justify-between gap-8 md:gap-20 md:max-w-[675px] lg:max-w-[925px] ${index!==0 ? "border-t-[1px]" : ""}`}>
+    // md:max-w-[675px] lg:max-w-[925px]
+    <section
+    className={`h-fit py-10 flex flex-row items-center justify-between gap-8 md:gap-20 md:max-w-[675px] lg:max-w-[925px] ${index!==0 ? "border-t-[1px]" : ""} mx-auto`}>
     <div 
       id="blogInfo"
-      className="flex flex-col gap-5 w-full">
+      className="flex flex-col gap-5 w-4/5">
 
       <nav className="flex flex-row justify-start items-center gap-3">
         <ProfilePic authorName={authorName}/>
@@ -106,23 +109,15 @@ const BlogCard = ({
       </nav>
 
       <main className="flex flex-col gap-2"
-        onClick={()=>{
-          navigate(`/blogs/${documentId}`)
-        }}>
-        <p className="font-bold text-xl">
-          {summaryTitle}
-        </p>
-        <p className="text-base text-neutral-500 mb-4">
-          {summaryBody.substring(0,130)}...
-        </p>
+        onClick={()=>navigate(`/blogs/${documentId}`)}>
+        <p className="font-bold text-xl">{summaryTitle}</p>
+        <p className="text-base text-neutral-500 mb-4">{summaryBody.substring(0,130)}</p>
       </main>
 
       <footer className="flex flex-row justify-between items-center">
         <div>
           {/* place holder for tag */}
-          <p className="text-neutral-500 text-sm">
-            3 min read
-          </p>
+          <p className="text-neutral-500 text-sm">3 min read</p>
         </div>
 
         <div className="flex flex-row gap-3">
@@ -135,13 +130,16 @@ const BlogCard = ({
           </svg>
 
           <More 
-            index={index} 
-            isBlog={isBlog}
             /*
             bookmarkId - when BlogCard is used by "Bookmakark.tsx",
-            documentId - as of now no use in More , just  used in BlogCard for navigating
+            documentId - as of now no use in More , just  used in BlogCard for to open a single blog
             */
-            documentId={bookmarkId??documentId}
+            type={type}
+            index={index} 
+            isBlog={isBlog}
+            documentId={ type==="PublishedBlog" || isBlog ? documentId : bookmarkId as string}
+            imageName={imageName}
+            authorId={authorId}
             />
         </div>
       </footer>
@@ -149,20 +147,23 @@ const BlogCard = ({
     </div>
 
     <div
-    className="hidden md:block"
+    className={`hidden md:block`}
     id="blogImage">
-      <img className="min-h-32 min-w-40 max-h-32 max-w-40 object-fill"
-      src="/image1.png" alt="Blog's Image"/>
+      {
+      signedImage 
+      ? 
+        <img className="min-h-32 min-w-40 max-h-32 max-w-40 object-fill"
+        src={signedImage} alt="Blog's Image"/>
+      :
+        <div className="flex items-center justify-center min-h-32 min-w-40 max-h-32 max-w-40 bg-gray-200 dark:bg-gray-300 rounded sm:w-96">
+          <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+              <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+          </svg>
+        </div>
+      }
     </div>
   </section>
   )
 }
 
 export default BlogCard
-
-          {/* <svg 
-            className={`${isBlog ? "visible" : "invisible"}
-            fill-current h-5 text-neutral-500 hover:text-neutral-800`}
-            viewBox="0 0 50 50"
-            ><path d="M 12.8125 2 C 12.335938 2.089844 11.992188 2.511719 12 3 L 12 47 C 11.996094 47.359375 12.1875 47.691406 12.496094 47.871094 C 12.804688 48.054688 13.1875 48.054688 13.5 47.875 L 25 41.15625 L 36.5 47.875 C 36.8125 48.054688 37.195313 48.054688 37.503906 47.871094 C 37.8125 47.691406 38.003906 47.359375 38 47 L 38 3 C 38 2.449219 37.550781 2 37 2 L 13 2 C 12.96875 2 12.9375 2 12.90625 2 C 12.875 2 12.84375 2 12.8125 2 Z M 14 4 L 36 4 L 36 45.25 L 25.5 39.125 C 25.191406 38.945313 24.808594 38.945313 24.5 39.125 L 14 45.25 Z"/>
-          </svg> */}

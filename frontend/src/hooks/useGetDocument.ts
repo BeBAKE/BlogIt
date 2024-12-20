@@ -27,19 +27,19 @@ export const useGetDocument = ({socket,documentId,titleQuill,bodyQuill}:GetDocum
         console.log("empty title and body");
         return
       }
-      console.log("before seting : ",content.title)
-      titleQuill.setContents(content.title)//content.title
-      bodyQuill.setContents(content.body)//content.body
+      // console.log("before seting : ",content.title)
+      titleQuill.setContents(content?.title)//content.title
+      bodyQuill.setContents(content?.body)//content.body
     })
 
     socket.on("saved",(msg)=>{
-      console.log("saved : ",msg)
+      // console.log("saved : ",msg)
     })
 
     return ()=>{
       socket.off("saved",(msg)=>{
-      console.log(msg)
-    })
+      // console.log(msg)
+      })
     }
   },[socket,documentId,titleQuill,bodyQuill])
 }

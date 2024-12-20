@@ -1,18 +1,23 @@
-import { selector } from "recoil";
+import { selectorFamily } from "recoil";
 import { paginationDetailsAtom } from "../atoms/paginationDetailsAtom";
 
-export const maxPagesSelector = selector({
+// type MaxPage = {
+//   totalBlogs : number,
+//   itemsPerPage : number
+// }
+
+export const maxPagesSelector = selectorFamily({
   key : "maxPageSelector",
-  get : ({get})=>{
+  get : (paginationId : string) => ({get}) => {
     const {
       totalBlogs ,
       itemsPerPage
-    } = get(paginationDetailsAtom)
+    } = get(paginationDetailsAtom(paginationId))
 
     if(itemsPerPage === 0 ){
       return 0
     }
-    const val = Math.ceil(totalBlogs/itemsPerPage)    
+    const val = Math.ceil(totalBlogs/itemsPerPage)   
     
     return val
   }

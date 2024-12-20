@@ -14,6 +14,8 @@ import { ToastContainer } from 'react-toastify'
 import MenuFullPage from './pages/MenuFullPage'
 import Bookmark from './components/Menu/Bookmark'
 import Draft from './components/Draft/Draft'
+import PublishedBlog from './components/Menu/PublishedBlog'
+import Following from './pages/Following'
 
 
 function App() {
@@ -28,10 +30,12 @@ function App() {
       </Route>
       <Route element={<StatusBar/>}>
         <Route element={<BlogsHome/>} path='/blogs' index/>
+        <Route element={<Following/>} path='/blogs/following'/>
         <Route element={<BlogPage/>} path='/blogs/:id'/>
         <Route element={<MenuFullPage/>}>
           <Route element={<Bookmark/>} path='/menu/bookmarks'/>
           <Route element={<Draft/>} path='/menu/drafts'/>
+          <Route element={<PublishedBlog/>} path='/menu/publishedBlogs'/>
         </Route>
       </Route>
       <Route element={<CreateBlog/>} path='/blogs/create/:id' />
@@ -42,7 +46,7 @@ function App() {
   
   <ToastContainer
     position="top-center"
-    autoClose={3000}
+    autoClose={1000}
     limit={1}
     hideProgressBar={false}
     newestOnTop={false}

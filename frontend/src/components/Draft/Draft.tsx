@@ -27,7 +27,6 @@ const Draft = ()=>{
             Authorization: `Bearer ${token}`,
           }
         })
-        console.log(res.data.data);
         
         setDrafts(res.data.data)
         setLoading(prev=>!prev)

@@ -48,7 +48,8 @@ const Signin = () => {
           localStorage.setItem("jwt",res.data.data)
           const token = localStorage.getItem("jwt") as string
           const decoded = jwtDecode(token) as AutorJwtPayload
-          localStorage.setItem("userName",decoded.authorName)        
+          localStorage.setItem("userName",decoded.authorName)   
+          localStorage.setItem("userId",decoded.authorId)     
           navigate("/blogs")   
         } catch (error:any) {
           setIsFirstRequest(prev=>!prev)

@@ -9,13 +9,15 @@ datasource db {
 }
 
 model User {
-  id       String     @id @default(uuid())
-  fullName String
-  email    String     @unique
-  password String
-  blogs    Blog[]
-  Bookmark Bookmark[]
-  drafts   Draft[]
+  id        String      @id @default(uuid())
+  fullName  String
+  email     String      @unique
+  password  String
+  blogs     Blog[]
+  Bookmark  Bookmark[]
+  drafts    Draft[]
+  Following Following[] @relation("following")
+  Follower  Following[] @relation("follower")
 }
 
 model Blog {
@@ -27,6 +29,8 @@ model Blog {
   authorId     String
   authorName   String
   createdAt    DateTime   @default(now())
+  // adding image here too
+  image        String?
   user         User       @relation(fields: [authorId], references: [id])
   Bookmark     Bookmark[]
 }
@@ -41,16 +45,6 @@ model Draft {
   user       User     @relation(fields: [authorId], references: [id], onDelete: Cascade, map: "Draft_authorId_fkey")
 }
 
-// model Bookmark {
-//   id           String   @id
-//   summaryTitle String   @db.VarChar
-//   summaryBody  String   @db.VarChar
-//   authorName   String
-//   createdAt    DateTime
-//   authorId     String
-//   bookmarkedAt DateTime @default(now())
-//   user         User     @relation(fields: [authorId], references: [id], onDelete: Cascade, map: "Bookmark_authorId_fk")
-// }
 model Bookmark {
   id           String   @id
   userId       String //means the user who has bookmarked it
@@ -58,6 +52,21 @@ model Bookmark {
   bookmarkedAt DateTime @default(now())
   blog         Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade, map: "Bookmark_blogId_fk")
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Bookmark_userId_fk")
+}
+
+model Following {
+  id          String   @id @default(uuid())
+  followingId String
+  followerId  String
+  createdAt   DateTime @default(now())
+
+  Following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade, map: "Follwing_User_fk")
+  Follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade, map: "Follower_User_fk")
+
+  @@unique(fields: [followerId, followingId], name: "unique_follower_following_constraint", map: "follower_following_unique")
+  // @@index(fields: [followingId, followerId], map: "follower_following_index")
+  @@index(fields: [followingId], map: "following_index")
+  @@index(fields: [followerId], map: "follower_index")
 }
 
 // between Draft and Blog , only one exists at a time

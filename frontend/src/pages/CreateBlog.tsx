@@ -1,7 +1,7 @@
 import Logo from "../components/StatusBar/Logo"
 import ProfilePic from "../components/StatusBar/ProfilePic"
 import BellIcon from "../components/StatusBar/BellIcon"
-import More from "../components/StatusBar/More"
+// import More from "../components/StatusBar/More"
 import PublishBtn from "../components/StatusBar/PublishBtn"
 import Editor from "../components/Blogs/Editor"
 import { useParams } from "react-router-dom"
@@ -43,9 +43,8 @@ const CreateBlog = ()=>{
               titleQuill={titleToPublish}
               bodyQuill={bodyToPublish}
             />
-            <More/>
             <BellIcon/>
-            <ProfilePic authorName="Vivek singh"/>
+            <ProfilePic authorName={userName}/>
         </div>
     </header>
 

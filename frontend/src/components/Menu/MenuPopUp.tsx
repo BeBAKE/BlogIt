@@ -39,12 +39,17 @@ const MenuPopUp = ()=>{
 
 export const MenuSection1 = ({gap}:{gap : string})=>{
   const nav = useNavigate()
+
   const goToBookmark = useCallback(()=>{
     nav("/menu/bookmarks")
   },[])
   const goToDraft = useCallback(()=>{
     nav("/menu/drafts")
   },[])
+  const goToPublishedBlogs = useCallback(()=>{
+    nav("/menu/publishedBlogs")
+  },[])
+
   return (
   <ul className={`p-5 flex flex-col gap-${gap}`}>
     <li className="flex flex-row gap-3 items-center group">
@@ -55,14 +60,23 @@ export const MenuSection1 = ({gap}:{gap : string})=>{
       </svg>
       <span className="group-hover:text-neutral-800" onClick={goToBookmark}>Bookmarks</span>
     </li>
-    <li className="flex flex-row gap-3 items-center p-0.5 group">
+    <li className="flex flex-row gap-3 items-center px-[3px] group">
     <svg 
       className="h-4 w-3 fill-current group-hover:text-neutral-800"viewBox="0 0 24 24" ><g id="_01_align_center" data-name="01 align center"><path d="M5,19H9.414L23.057,5.357a3.125,3.125,0,0,0,0-4.414,3.194,3.194,0,0,0-4.414,0L5,14.586Zm2-3.586L20.057,2.357a1.148,1.148,0,0,1,1.586,0,1.123,1.123,0,0,1,0,1.586L8.586,17H7Z"/><path d="M23.621,7.622,22,9.243V16H16v6H2V3A1,1,0,0,1,3,2H14.758L16.379.379A5.013,5.013,0,0,1,16.84,0H3A3,3,0,0,0,0,3V24H18.414L24,18.414V7.161A5.15,5.15,0,0,1,23.621,7.622ZM18,21.586V18h3.586Z"/></g></svg>
       <span className="group-hover:text-neutral-800" onClick={goToDraft}>Drafts</span>
     </li>
+    <li className="flex flex-row gap-3 items-center group">
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"strokeWidth="1.5" stroke="currentColor" className="h-6 w-4 group-hover:text-neutral-800">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+      </svg>  
+      <span className="group-hover:text-neutral-800" onClick={goToPublishedBlogs}>Published Blogs</span>
+    </li>
   </ul>
   )
 }
+
+
 export const MenuSection2 = ({gap}:{gap : string})=>{
   return (
   <ul className={`border-b-[1px] p-5 flex flex-col gap-${gap}`}>
@@ -98,7 +112,7 @@ export const MenuSectionBreak = ()=>{
 }
 export const VerticalDivider = ()=>{
   return <div
-  className="w-[1px] h-screen bg-gray-200">
+  className="w-[1px] h-screen bg-gray-200 hidden lg:block">
   </div>
 }
 

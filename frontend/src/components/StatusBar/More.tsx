@@ -1,43 +1,70 @@
-import {memo} from "react"
-import BookmarkFloatingMenu from "../Menu/BookmarkFloatingMenu"
-import BlogFloatingMenu from "../Menu/BlogFloatingMenu"
+import { memo } from "react"
 import { useRecoilState } from "recoil"
-import bookmarkFloatingMenuAtom from "../../store/atoms/bookmarkFloatingMenu"
+
+import BlogFloatingMenu from "../Menu/BlogFloatingMenu"
+import PublishedBlogFloatingMenu from "../Menu/PublishedBlogFloatingMenu"
+import BookmarkFloatingMenu from "../Menu/BookmarkFloatingMenu"
+
 import blogFloatingMenuAtom from "../../store/atoms/blogFloatingMenu"
+import publishBlogFMAtom from "../../store/atoms/publishedBlogFMAtom"
+import bookmarkFloatingMenuAtom from "../../store/atoms/bookmarkFloatingMenu"
+
 interface Props {
   w ?: number,
   hover ?: boolean,
   index : number ,
   isBlog ?: boolean,
-  documentId : string
+  documentId : string,
+  type ?: "PublishedBlog" | "Blog" | "Bookmark",
+  imageName ?: string
+  authorId : string
 }
+/*
+documentId - 
+  1. blog's id - in case of BlogHome.tsx or PublishedBlog.tsx
+  (BlogHome - to follow or unfollow the author)
+  (publishedBlog - to send delete blog request)
+  2. bookmark's id - in case of Bookmark.tsx ( used by BmFm.tsx to send bkend remove req)
+*/
 const More = memo((
   {
     w,
     hover,
     index,
     isBlog,
-    documentId // used by BmFm.tsx to send bkend remove req
+    documentId,
+    type,
+    imageName,
+    authorId
   } : Props ) => {
     
-  //@ts-ignore
+  // @ts-ignore
   const [bookmarkFloatMenu, setBookmarkFloatMenu] = useRecoilState(bookmarkFloatingMenuAtom(index))
   //@ts-ignore
   const [blogFloatMenu, setBlogFloatMenu] = useRecoilState(blogFloatingMenuAtom(index))
+  //@ts-ignore
+  const [pBFloatingMenu, setPBFloatingMenu] = useRecoilState(publishBlogFMAtom(index))
 
   const onMoreClickForBookmark = ()=>{
     setBookmarkFloatMenu(prev => !prev)
-    console.log("onMoreClickFor Bookmark")
+    // console.log("onMoreClickFor Bookmark")
   }
   const onMoreClickForBlog = ()=>{
     setBlogFloatMenu(prev => !prev)
-    console.log("onMoreClickFor Blog")
+    // console.log("onMoreClickFor Blog")
   }
+  const onMoreClickForPublishedBlog = ()=>{
+    setPBFloatingMenu(prev => !prev)
+    // console.log("onMoreClickFor PublishedBlog")
+  }
+
   return (<div className="relative" id={`${index}`}>
     <svg
       id="moreIcon"
       viewBox="0 0 210 210"
-      onClick={isBlog?onMoreClickForBlog:onMoreClickForBookmark}
+      onClick={type==="PublishedBlog"
+        ? onMoreClickForPublishedBlog 
+        : (isBlog ? onMoreClickForBlog : onMoreClickForBookmark) }
       className={`${w ? "w-"+w : "w-5" } fill-current text-neutral-500 
       ${(hover===true || hover===undefined) ? "hover:text-neutral-800" : ""}`}>
       <g id="moreIcon">
@@ -48,9 +75,12 @@ const More = memo((
     </svg>
 
     {
-      isBlog 
-      ? <BlogFloatingMenu/>
-      : <BookmarkFloatingMenu bookmarkId={documentId} index={index}/>
+      type==="PublishedBlog"
+      ? <PublishedBlogFloatingMenu blogId={documentId} index={index} imageName={imageName}/>
+      : (isBlog 
+        ? <BlogFloatingMenu authorId={authorId} index={index}/>
+        : <BookmarkFloatingMenu bookmarkId={documentId} index={index}/>
+        )
     }
     
   </div>

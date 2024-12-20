@@ -6,8 +6,11 @@ import { useSocket } from "../../hooks/useSocket";
 import { useQuill } from "../../hooks/useQuill";
 import { useGetDocument } from "../../hooks/useGetDocument";
 import { useQuillTextChange } from "../../hooks/useQuillTextChange";
-import { Dispatch, useRef } from "react";
+import { Dispatch, useEffect, useRef } from "react";
 import Quill from "quill/core";
+import { useRecoilState } from "recoil";
+import coverPhotoAtom from "../../store/atoms/coverPhotoAtom";
+import { toast } from "react-toastify";
 
 export interface EditorProps {
   documentId : string
@@ -19,8 +22,11 @@ export interface EditorProps {
 
 const Editor = ({ documentId,titleQuill,bodyQuill,setTitleQuill,setBodyQuill } : EditorProps)=>{
 
+  const [file,setFile] = useRecoilState(coverPhotoAtom)
+
   const titleContainerRef = useRef<HTMLDivElement>(null)
-  const bodyContainerRef = useRef<HTMLDivElement>(null)
+  const bodyContainerRef  = useRef<HTMLDivElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const socket = useSocket()
 
@@ -29,6 +35,17 @@ const Editor = ({ documentId,titleQuill,bodyQuill,setTitleQuill,setBodyQuill } :
   useGetDocument({socket,documentId,titleQuill,bodyQuill})
   
   useQuillTextChange({socket,documentId,titleQuill,bodyQuill})
+
+  const fileSelection = (e:any)=>{
+    const selectedFile = e.currentTarget.files[0]
+    if(selectedFile?.size> 8000000){
+      toast.warn("Image upload limit is 8 mb")
+      return
+    }
+    setFile(selectedFile)
+  }
+
+
 
 
 
@@ -62,6 +79,31 @@ const Editor = ({ documentId,titleQuill,bodyQuill,setTitleQuill,setBodyQuill } :
   return (
       <>
         <div id="title" ref={titleContainerRef} className="mb-8"></div>  
+
+        <div className="mb-8">
+          <input 
+            type="file" 
+            ref={fileRef}
+            accept="image/*"
+            name="coverPhoto"
+            onChange={fileSelection}
+            style={{display : "none"}}
+          />
+
+          <div className="flex flex-row items-center gap-6">
+            <button 
+              onClick={()=>fileRef.current?.click()}
+              className="ms-4 text-sm bg-gray-800 active:bg-gray-600 text-white h-7 w-20 rounded-xl">
+              Add cover
+            </button>
+            <span 
+              className={`${file ? "text-green-800" : 'text-red-800'} text-sm`}>
+              {file ? "Cover Uploaded" : "No Cover Picture"}
+            </span>
+          </div>
+
+        </div>
+
         <div id="body" ref={bodyContainerRef} className=""></div>  
       </>
     )

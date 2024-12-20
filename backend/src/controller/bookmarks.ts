@@ -12,18 +12,10 @@ import { bookmarkCursor, CreateBookmark } from "@bebake/blogit-common";
 
 */
 
-type DataForGetAll = {
+export type DataForGetAll = {
   myCursorId : string, // bookmarks's id
   myCursor : Date // bookmarkedAt
 }
-
-// export const getBookmark = async(c:Context)=>{
-//   try {
-
-//   } catch (error) {
-
-//   }
-// }
 
 export const getAllBookmarks = async(c:Context)=>{
   try {
@@ -35,9 +27,13 @@ export const getAllBookmarks = async(c:Context)=>{
 
     const skip = cursorInfo ? 1 : 0
 
-    console.log("here is the cursorInfo : ",cursorInfo)
+    const userId = c.get("authorId") // id of user who has bookmarked the blog
+
     const bookmarks = await prisma.bookmark.findMany({
-      take : 4,
+      where : {
+        userId : userId
+      },
+      take : 10,
       skip : skip,
       cursor : cursorInfo,
       orderBy : {
@@ -50,7 +46,9 @@ export const getAllBookmarks = async(c:Context)=>{
             summaryBody : true,
             createdAt : true,
             authorName : true,
-            authorId : true
+            authorId : true,
+            image : true,
+            id : true
           }
         }
       }

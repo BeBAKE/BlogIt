@@ -35,7 +35,8 @@ class WSS {
   // Initialize socket connection events
   private initializeConnection() {
     this.wss.on("connection", (socket: Socket) => {
-      console.log("New connection with socket id:", socket.id);
+      // console.log("New connection with socket id:", socket.id);
+      // console.log("New connection");
 
       // Handle getting document
       socket.on("get-document", async (id: string) => {
@@ -52,7 +53,8 @@ class WSS {
 
       // Handle disconnection
       socket.on("disconnect", () => {
-        console.log("Socket disconnected with id:", socket.id);
+        // console.log("Socket disconnected ");
+        // console.log("Socket disconnected with id:", socket.id);
       });
     });
   }

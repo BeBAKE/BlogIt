@@ -1,27 +1,41 @@
-import { useCallback } from "react"
-import { useRecoilValue } from "recoil"
+import { useCallback, useContext } from "react"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { currentPageAtom } from "../../store/atoms/currentPage"
 import { maxPagesSelector } from "../../store/selector/maxPages"
 import { paginationDetailsAtom } from "../../store/atoms/paginationDetailsAtom"
+import { PaginationAtomId } from "../../hooks/PaginationAtomId"
+import loadingAtom from "../../store/atoms/loadingAtom"
+import { useNavigate } from "react-router-dom"
 paginationDetailsAtom
 
 const PrevNextIcon = ({next}:{next:boolean})=>{
-	const currentPage = useRecoilValue(currentPageAtom)
-	const maxPage = useRecoilValue(maxPagesSelector)
+	const paginationId = useContext(PaginationAtomId)
+	const maxPage = useRecoilValue(maxPagesSelector(paginationId))
+	const [currentPage, setCurrentPage] = useRecoilState(currentPageAtom(paginationId))
 
+	const nav = useNavigate()
+
+  const setLoading = useSetRecoilState(loadingAtom(paginationId))
+	
 	const click = useCallback(()=>{
+		const location = {
+			value : (pageNo:number) => paginationId==="blogHome"?`/blogs?page=${pageNo}`:`/blogs/following?page=${pageNo}`
+		}
+
 		if(next && currentPage<maxPage){
-			return `/blogs?page=${currentPage+1}`
-			// setCurrentPage(currentPage+1)
+			setCurrentPage(currentPage+1)
+			setLoading(true)
+			nav(location.value(currentPage+1))
 		}
 		if(!next && currentPage!==1){		
-			// setCurrentPage(currentPage-1)
-			return `/blogs?page=${currentPage-1}`
+			setCurrentPage(currentPage-1)
+			setLoading(true)
+			nav(location.value(currentPage-1))
 		}
 	},[currentPage,maxPage])
 
   return (
-		<a href={click()}>
+		<span onClick={click}>
 			<svg 
 				className="fill-current text-black h-6 w-6"
 				version="1.1" id="Layer_1"
@@ -38,7 +52,7 @@ const PrevNextIcon = ({next}:{next:boolean})=>{
 					</g>
 				</g>
 			</svg>
-		</a>
+		</span>
   )
 }
 

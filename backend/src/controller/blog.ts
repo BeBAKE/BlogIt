@@ -1,8 +1,12 @@
 import { Context } from "hono";
 import getPrisma from "../db";
-import { CreatePostType, UpdatePostType } from "@bebake/blogit-common";
+import { CreatePostType, deltaSchema, UpdatePostType } from "@bebake/blogit-common";
 import { DeltaToText, deltaToText } from "../misc/DeltaToText";
 import { JsonArray } from "@prisma/client/runtime/library";
+import { DataForGetAll } from "./bookmarks";
+
+import {z} from 'zod'
+// import { deltaSchema } from "../misc/zodSchema";
 
 export const getBlog = async(c:Context)=>{
   const id = c.req.param("id")
@@ -41,30 +45,34 @@ export const getAllBlog = async(c:Context)=>{
     const skip = page ? (Number(page)-1)*take : 0
 
     //Select * , can cause speed issues
-    const blogs = await prisma.blog.findMany({
-      select : {
-        id : true,
-        summaryTitle : true,
-        summaryBody : true,
-        createdAt : true,
-        authorId : true,
-        authorName : true,
-        Bookmark : {
-          where : {
-            userId : authorId
+    const [blogs, totalBlogs] = await Promise.all([
+      prisma.blog.findMany({
+        select : {
+          id : true,
+          summaryTitle : true,
+          summaryBody : true,
+          createdAt : true,
+          authorId : true,
+          authorName : true,
+          image : true,
+          Bookmark : {
+            where : {
+              userId : authorId
+            }
           }
-        }
-      },
-      take : take,
-      skip : skip,
-    })
+        },
+        take : take,
+        skip : skip,
+      }),
+      prisma.blog.count()
+    ])
 
     return c.json({
       success : true,
       message : page ? "Post fetched successfully" : "Warning! Page number missing",
       data : blogs,
       details: {
-        totalBlogs : blogs.length,
+        totalBlogs : totalBlogs,
         itemsPerPage : take
       }
     }, 201 )
@@ -72,6 +80,37 @@ export const getAllBlog = async(c:Context)=>{
   } catch (error) {
     console.log(error)
     return c.json({success : false,message : "Internal Server Error"},500)
+  }
+}
+
+// get all the publisehd blogs
+export const getPublished = async(c:Context)=>{
+  try {
+    const prisma = await getPrisma(c.env.DATABASE_URL)
+    const parsedData : DataForGetAll = c.get("parsedData")
+    const cursorInfo = parsedData
+    ? { id : parsedData.myCursorId , createdAt : parsedData.myCursor} 
+    : undefined
+
+    const skip = cursorInfo ? 1 : 0
+
+    const authorId = c.get("authorId") // id of user who has bookmarked the blog
+
+    const publisehdBlogs = await prisma.blog.findMany({
+      where : {
+        authorId : authorId
+      },
+      take : 10,
+      skip : skip,
+      cursor : cursorInfo,
+      orderBy : {
+        createdAt : 'desc'
+      }
+    })
+    return c.json({success : true, message : "Published Blogs fetched successfully",data : publisehdBlogs},200)
+  } catch (error) {
+    console.log(error)
+    return c.json({success : false, message : "Internal Server Error"},500)
   }
 }
 
@@ -123,6 +162,10 @@ export const getAllBlog = async(c:Context)=>{
 -> Blog will get the delta title and summary
 
 */
+type ErrorMessage = {
+  titleErrorMessage ?: object,
+  bodyErrorMessage ?: object
+}
 export const createBlog = async(c:Context)=>{
   try {
     const prisma = await getPrisma(c.env.DATABASE_URL)
@@ -139,14 +182,35 @@ export const createBlog = async(c:Context)=>{
     const authorId = c.get("authorId")
     const authorName = c.get("authorName")
 
+    //parsing the tile and body from the draft
+    // added schema validation becuase empty title or body causes error in deltaToText
+    const parsedTitleData = deltaSchema.safeParse(draft.title)
+    const parsedBodyData = deltaSchema.safeParse(draft.body)
+
+    if(!parsedTitleData.success || !parsedBodyData.success){
+      const titleErrorMessage = !parsedTitleData.success 
+      ? parsedTitleData.error.issues.map((issue : any)=>{
+            return `${issue.path.join(".")} :- ${issue.message} `
+          })
+      : undefined
+      const bodyErrorMessage = !parsedBodyData.success 
+      ? parsedBodyData.error.issues.map((issue : any)=>{
+            return `${issue.path.join(".")} :- ${issue.message} `
+          })
+      : undefined
+
+      const errorMessage : ErrorMessage = {}
+      if(titleErrorMessage) errorMessage.titleErrorMessage=titleErrorMessage
+      if(bodyErrorMessage) errorMessage.bodyErrorMessage=bodyErrorMessage
+
+      return c.json({success : false,message : "Invalid Data",detail : errorMessage},400)
+    }
+
     const titleDeepCopy = JSON.parse(JSON.stringify(draft.title))
     const bodyDeepCopy = JSON.parse(JSON.stringify(draft.body))
 
     const plainTitle = deltaToText(titleDeepCopy as DeltaToText,"title") 
-    const plainBody = deltaToText(bodyDeepCopy as DeltaToText,"body")
-    console.log("plain title :",plainTitle),
-    console.log("plain body : ", plainBody);
-    
+    const plainBody = deltaToText(bodyDeepCopy as DeltaToText,"body")    
 
     const blog = await prisma.$transaction([
       prisma.blog.create({
@@ -165,15 +229,31 @@ export const createBlog = async(c:Context)=>{
           id : id
         }
       })  
-    ])
-
-    console.log("blog has done it babay : ",blog)
-    
+    ])    
     return c.json({success:true,message : "post created successfully",data : { id : blog[0].id }},200)
   } catch (error) {
-    console.log(error);
-    
+    console.log(error); 
     return c.json({success : false,message : "Internal Server Error"},500)
+  }
+}
+
+export const deleteBlog = async(c:Context)=>{
+  try {
+    const prisma = await getPrisma(c.env.DATABASE_URL)
+    const { id } = c.req.param()
+    const authorId = c.get("authorId")
+
+    const blog = await prisma.blog.delete({
+      where : {
+        id : id,
+        authorId : authorId
+      }
+    })
+    
+    return c.json({success : true, message : "Blogs deleted successfully"},200)
+  } catch (error) {
+    console.log(error); 
+    return c.json({success : false,message : "Internal Server Error"},500)    
   }
 }
 

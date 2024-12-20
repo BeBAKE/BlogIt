@@ -27,7 +27,7 @@ export const useQuillTextChange = (
     clearTimeout(intervalId.current)
     intervalId.current = setTimeout(() => {
       socket?.emit("save-document",documentId,quillInstance?.getContents(),type)
-      console.log(`times up ${type}!`)
+      // console.log(`times up ${type}!`)
     }, 1000);
   },[documentId,titleQuill,bodyQuill])
 

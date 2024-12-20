@@ -7,10 +7,12 @@ const indexRouter = new Hono<{Bindings : Bindings}>()
 import blogsRouter from "./blog"
 import userRouter from "./user"
 import draftRouter from "./draft"
+import socialRouter from "./social"
 
 indexRouter.route('/',userRouter)
 indexRouter.route('/blog',blogsRouter)
 indexRouter.route('/draft',draftRouter)
+indexRouter.route('/social',socialRouter)
 
 indexRouter.get("/generate",async(c)=>{
   const quotesData = quotes

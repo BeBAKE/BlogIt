@@ -1,19 +1,16 @@
-import React from "react"
+import { memo } from "react"
 
-type WriteLogoProp = {color : string, hoverColor : string}
-const WriteLogo = React.memo(({color,hoverColor}:WriteLogoProp)=>{
-
-  const style = {
-    verticalAlign: "middle",
-    overflow: "hidden" ,
-  }
+const WriteLogo = memo(()=>{
 
   return <>
   
   <svg 
     id="svg-icon"
-    style={style} 
-    className={`fill-current ${color} group-hover:${hoverColor} h-5 w-5`}
+    style={{
+    verticalAlign: "middle",
+    overflow: "hidden" ,
+    }} 
+    className={`fill-current text-neutral-500 group-hover:text-neutral-800 h-5 w-5`}
     viewBox="0 0 1024 1024" 
     version="1.1"
     xmlns="http://www.w3.org/2000/svg">

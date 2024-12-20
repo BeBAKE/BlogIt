@@ -1,4 +1,4 @@
-import { Context, Hono } from 'hono'
+import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import indexRouter from './routes/index'
 import { auth } from './middleware/auth'
@@ -20,6 +20,7 @@ app.use('/api/v1/*',cors({
 
 app.use("/api/v1/blog/*",auth)
 app.use("/api/v1/draft/*",auth)
+app.use("/api/v1/social/*",auth)
 
 
 app.route('/api/v1',indexRouter)

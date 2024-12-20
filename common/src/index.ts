@@ -38,6 +38,45 @@ export const bookmarkCursorSchema = z.object({
   myCursorId : z.string().uuid()
 }).optional()
 
+export const deltaSchema = z.object({
+  "ops" : z.object({
+    "insert" : z.string(),
+    "attributes" : z.object({
+      "color" : z.string(),
+
+      "size" : z.string().or(z.boolean()),
+
+      "bold" : z.boolean(),
+      "italic" : z.boolean(),
+      "underline" : z.boolean(),
+      "strike" : z.boolean(),
+
+      "header" : z.number().max(3),
+
+      "list" : z.string(),
+
+      "blockquote" : z.string(),
+
+      "code-block" : z.string()
+
+    }).partial().optional()
+  }).array()
+})
+/*
+  Title delta
+  [{ 'color': ['gray','black'] }],  
+  [{ 'size': ['small', false] }],
+
+  Body Delta
+  ['bold','italic','underline','strike'],
+  [{ 'header': [ 2, 3, false] }],
+  [{ 'color': ['red','blue','green','yellow','pink','orange','brown','black','white'] }],  
+  [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
+  ['blockquote', 'code-block'],
+*/
+
+export type DeltaSchema = z.infer<typeof deltaSchema>
+
 export type SigninType = z.infer<typeof signinSchema>
 
 export type SignupType = z.infer<typeof signupSchema>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 import ProfilePic from "../components/StatusBar/ProfilePic"
-import { BACKEND_URL } from "../constants/backendURL"
+import { BACKEND_URL, S3_URL } from "../constants/backendURL"
 import axios from "axios"
 import BlogSkeleton from "../components/skeleton/BlogSkeleton"
 import ReadOnlyEditor from "../components/Blogs/ReadOnlyEditor"
@@ -14,6 +14,7 @@ type BlogDetailType = {
   createdAt : string[],
   authorName : string,
   owner ?: boolean,
+  image : string | null // backend - image , frontend - imageName (both are image url , just differently name in back and front)
 }
 
 
@@ -25,10 +26,12 @@ const BlogPage = () => {
     body : "",
     createdAt : ['nill',"Jan","1","1900"],
     authorName : "N/A",
-    owner : false
+    owner : false,
+    image : null
   })
 
   const [ loading, setLoading ] = useState<boolean>(true)
+  const [ signedImage, setSignedImage ] = useState(undefined)
 
   useEffect(()=>{
     (async()=>{
@@ -60,24 +63,44 @@ const BlogPage = () => {
     })()
   },[])
 
+  useEffect(()=>{ 
+    if(!blogDetail.image) return
+    (async()=>{
+      try {
+        const res2 = await axios(`${S3_URL}/imageUrl/${blogDetail.image}`,{
+          method : "get",
+          headers : {
+            "Content-Type" : "multipart/form-data",
+            Authorization : `Bearer ${localStorage.getItem("jwt")}`
+          }
+        })
+        setSignedImage(res2.data.data)     
+      } catch (error) {
+        console.log(error)
+      }
+    })()
+  },[blogDetail])
+
   return <>
     { 
     loading ? ( <BlogSkeleton/> ) : (<section
       className="flex flex-col md:flex-row ms-24 mt-16 me-8 gap-8 h-full justify-evenly mb-10">
 
-      <div className="flex flex-col gap-4 max-w-[350px] md:max-w-[450px]  lg:max-w-[682px] 2xl:max-w-[890px]">
-        {/* 2xl:max-w-[890px] */}
+      <div className="flex flex-col gap-4 w-[350px] md:w-[450px]  lg:w-[682px] 2xl:w-[890px] items-start">{/* 2xl:max-w-[890px] */}
         <div>
           <ReadOnlyEditor content={blogDetail.title} id="title"/>
         </div>
-        <h3 className="text-base text-neutral-500 mb-3">
+
+        <h3 className="text-base text-neutral-500 mb-3 ms-3.5">
           {`Posted on ${blogDetail.createdAt[1]} ${blogDetail.createdAt[2]}, ${blogDetail.createdAt[3]}`}
         </h3>
 
 
+        <img className={`h-64 w-80 object-fill self-center my-6 ${signedImage?"block":"hidden"} `}
+        src={signedImage} alt="Blog's Image"/>
+
         <div
-        // className="text-lg text-neutral-700 leading-8"
-        className="font-charter text-[rgb(41,41,41)] text-[7.29rem] leading-[34px] break-words text-wrap tracking-wide">
+          className="font-charter text-[rgb(41,41,41)] text-[7.29rem] leading-[34px] break-words text-wrap tracking-wide">
           <ReadOnlyEditor content={blogDetail.body} id="body"/>
         </div>
       </div>

@@ -1,11 +1,11 @@
-import { atom } from "recoil";
+import { atomFamily } from "recoil";
 
 export type PaginationDetails = {
   totalBlogs : number,
   itemsPerPage : number
 }
 
-export const paginationDetailsAtom = atom<PaginationDetails>({
+export const paginationDetailsAtom = atomFamily<PaginationDetails,string>({
   key : 'paginationDetailsAtom',
   default : {
     totalBlogs : 0,

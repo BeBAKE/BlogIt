@@ -5,7 +5,7 @@ const Logo = React.memo(()=>{
   const nav = useNavigate()
 
   const goToHome = useCallback(()=>{
-    nav("/blogs?page=1")
+    nav("/blogs")
   },[])
 
   return <svg 

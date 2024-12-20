@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { memo, useEffect, useMemo } from "react"
 import Logo from "./Logo"
 import WriteLogo from "./WriteLogo"
 import ProfilePic from "./ProfilePic"
@@ -10,15 +10,15 @@ import { userNameSelector } from "../../store/selector/userName"
 import Menu from "../Menu/MenuPopUp"
 
 
-const StatusBar = ()=>{
+const StatusBar = memo(()=>{
   const userName = useRecoilValue(userNameSelector)
 
   const searchIcon = useMemo(()=>{
-    return{
-    background: `url('/search.svg') no-repeat left`,
-    backgroundSize : "18px 18px",
-    backgroundColor : "rgb(243 244 246)",
-    borderLeft : "12px solid rgb(243 244 246)",
+    return {
+      background: `url('/search.svg') no-repeat left`,
+      backgroundSize : "18px 18px",
+      backgroundColor : "rgb(243 244 246)",
+      borderLeft : "12px solid rgb(243 244 246)",
     }
   },[])
   const nav = useNavigate()
@@ -46,7 +46,7 @@ const StatusBar = ()=>{
           
           <div className="flex flex-row items-center group gap-1.5"
             onClick={onClickWrite}>
-            <WriteLogo color="text-neutral-500" hoverColor="text-neutral-800"/>
+            <WriteLogo/>
             <p className="text-sm font-normal text-neutral-500 group-hover:text-neutral-800">Write</p>
           </div>
           
@@ -68,7 +68,7 @@ const StatusBar = ()=>{
       <Outlet/>
     </>
   )
-}
+})
 
 
 export default StatusBar 

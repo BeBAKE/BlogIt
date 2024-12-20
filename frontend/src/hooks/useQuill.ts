@@ -138,9 +138,7 @@ export const useQuill = ({titleContainerRef,bodyContainerRef,titleQuill,bodyQuil
       toolbar : bodyToolbarOptions,
       }
     })
-    console.log("inside the useQuill , title",titleQuill);
-    console.log("inside the useQuill , body",bodyQuill);
-    
+        
     quillTitleLocal.disable()
     setTitleQuill(quillTitleLocal)
 

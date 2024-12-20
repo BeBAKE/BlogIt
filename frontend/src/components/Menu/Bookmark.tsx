@@ -12,6 +12,8 @@ export type Bookmarks = {
     summaryTitle: string;
     summaryBody: string;
     createdAt: Date;
+    image : string | null
+    
   }
   id: string; // id of bookmark
   bookmarkedAt: Date;
@@ -77,7 +79,6 @@ const Bookmark = ()=>{
       setSendRequestByScrolling(false)
       setLoading(true)
       try { 
-        console.log("cursorInfo to send  : ",cursorInfo);
         const res = await axios({
           method: "post",
           url: `${BACKEND_URL}/api/v1/blog/bookmark/bulk`,
@@ -110,11 +111,14 @@ const Bookmark = ()=>{
       <div className="text-4xl font-bold self-center mb-16">
         Bookmarks
       </div>
+
+      <div>
       {
         bookmarks.map((e:Bookmarks,index:number)=>{
           const date = new Date((e.blog.createdAt)).toString().split(" ")
           return ( 
             <BlogCard
+              authorId={e.blog.authorId}
               key={index}
               index={index}
               id={e.blog.authorId}//id - just to avoid error in BlogCard
@@ -125,10 +129,12 @@ const Bookmark = ()=>{
               authorName={e.blog.authorName}
               isBlog={false}
               bookmarkId={e.id} // to send remove request
-              />
-            )
+              imageName={e.blog.image??undefined}
+            />
+          )
         })
       }
+      </div>
 
       {/* Loader for cursor scrolling */}
       <div
