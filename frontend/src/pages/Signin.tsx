@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { SigninType } from "@bebake/blogit-common"
 import { BACKEND_URL } from "../constants/backendURL"
 import { jwtDecode } from "jwt-decode";
+import { useSetRecoilState } from "recoil"
+import jwtAtom from "../store/atoms/jwtAtom"
 
 export type AutorJwtPayload = {
   authorId : string,
@@ -25,6 +27,7 @@ const Signin = () => {
     password : ""
   })
   const [isFirstRequest, setIsFirstRequest] = useState<boolean>(true)
+  const setJwt = useSetRecoilState(jwtAtom)
 
   const submit = useCallback(()=>{
     if(!isFirstRequest) return
@@ -45,8 +48,10 @@ const Signin = () => {
               password : formData.password.trim(),
             }
           })   
-          localStorage.setItem("jwt",res.data.data)
-          const token = localStorage.getItem("jwt") as string
+          const token = res.data.data as string
+          setJwt(token)
+          localStorage.setItem("jwt",token)
+
           const decoded = jwtDecode(token) as AutorJwtPayload
           localStorage.setItem("userName",decoded.authorName)   
           localStorage.setItem("userId",decoded.authorId)     

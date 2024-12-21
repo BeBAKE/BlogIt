@@ -11,26 +11,34 @@ import BlogCard from "../components/Blogs/BlogCard"
 import BlogHeaderWrapper from "../components/Blogs/BlogHeaderWrapper"
 import { PaginationAtomId } from "../hooks/PaginationAtomId"
 import loadingAtom from "../store/atoms/loadingAtom"
+import jwtAtom from "../store/atoms/jwtAtom"
+import { toast } from "react-toastify"
 
 
 const Following = ()=>{
   const [blogs,setBlogs] = useState<BlogsType[]>([])
   const currentPage = useRecoilValue(currentPageAtom(PaginationId.following))
   const [loading ,setLoading ] = useRecoilState(loadingAtom(PaginationId.following))
+  const [isError , setIsError] = useState<boolean>(false)
+
   const setPaginationDetails = useSetRecoilState<PaginationDetails>(paginationDetailsAtom(PaginationId.following))
 
   const [noFollowing, setNoFollowing] = useState(false)
+  const jwt = useRecoilValue(jwtAtom)
 
   useEffect(()=>{
-    const token = localStorage.getItem("jwt");    
     (async()=>{
       setLoading(true)
       try {       
+        if(jwt==="invalid") {
+          toast.error("invalid token")
+          throw new Error("invalid token")
+        }   
         const res1 = await axios({
           method: "get",
           url: `${BACKEND_URL}/api/v1/social/following`,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${jwt}`,
           }
         });     
         const followingIds = res1.data.data.map((e:any)=>{
@@ -41,7 +49,7 @@ const Following = ()=>{
           url: `${BACKEND_URL}/api/v1/social/followingBlogs`,
           data : {followingIds : followingIds, page : currentPage},
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${jwt}`,
           }
         });   
       //! do something for when no blogs
@@ -51,9 +59,11 @@ const Following = ()=>{
         }
         setPaginationDetails(res.data.details)
         setBlogs(res.data.data)
-        setLoading(false)
       } catch (error) {
         console.log(error)
+        setIsError(true)
+      } finally {
+        setLoading(false)
       }
     })()
   },[currentPage])
@@ -70,14 +80,23 @@ const Following = ()=>{
       </div>
 
       {
-        noFollowing 
-
-        ? <NoFollowing/>
-        
-        : <div>
-          {loading 
-            ? (Array(8).fill(null).map((_,index)=><BlogCardSkeleton index={index} key={index}/>)) 
-            : (
+        isError
+        ?
+        <div className="text-2xl font-extralight h-96 w-full flex flex-row items-center justify-center">
+          Oops! something went wrong
+        </div>
+        :
+        (
+          noFollowing 
+          ? 
+          <NoFollowing/>
+          : 
+          <div>
+            {
+              loading 
+              ? 
+              (Array(8).fill(null).map((_,index)=><BlogCardSkeleton index={index} key={index}/>)) 
+              : 
               blogs.map((e:BlogsType,index:number)=>{
                 const date = new Date((e.createdAt)).toString().split(" ")
                 const isBookmarked = e.Bookmark.length>=1 ? true : false
@@ -97,14 +116,14 @@ const Following = ()=>{
                     imageName={e.image??undefined}
                     />
                   )
-              })
-            )       
-        }
-        </div>
+              })     
+          }
+          </div>
+        )
       }
 
 
-      <div className={`${noFollowing?"hidden":"mt-8 justify-self-end"}`}>
+      <div className={`${(noFollowing || isError) ?"hidden":"mt-8 justify-self-end"}`}>
         <PaginationAtomId.Provider value={PaginationId.following}>
           <PaginationContainer/>
         </PaginationAtomId.Provider>

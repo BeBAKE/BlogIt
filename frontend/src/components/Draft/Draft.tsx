@@ -2,8 +2,10 @@ import { useEffect, useState } from "react"
 import DraftCard from "./DraftCard"
 import axios from "axios"
 import { BACKEND_URL } from "../../constants/backendURL"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import draftAtom from "../../store/atoms/DraftsAtom"
+import jwtAtom from "../../store/atoms/jwtAtom"
+import { toast } from "react-toastify"
 
 export type Drafts = {
   id : string,
@@ -15,16 +17,20 @@ const Draft = ()=>{
   const [drafts , setDrafts] = useRecoilState(draftAtom)
   const [isError , setIsError] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
+  const jwt = useRecoilValue(jwtAtom)
 
   useEffect(()=>{
     const fetchDraft = async()=>{
-      const token = localStorage.getItem("jwt")
       try {
+        if(jwt==="invalid") {
+          toast.error("invalid token")
+          throw new Error("invalid token")
+        }
         const res = await axios({
           method : "get",
           url: `${BACKEND_URL}/api/v1/draft`,
           headers : {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${jwt}`,
           }
         })
         
@@ -33,6 +39,7 @@ const Draft = ()=>{
       } catch (error) {
         console.log(error)
         setIsError(true)
+        setLoading(false)
       }
     }
 
@@ -51,7 +58,7 @@ const Draft = ()=>{
         isError 
         ?
         <div className="text-2xl font-extralight">
-          Oops went is wrong
+          Oops! something went wrong
         </div>
         :
         drafts.map((e:Drafts,index:number)=>{

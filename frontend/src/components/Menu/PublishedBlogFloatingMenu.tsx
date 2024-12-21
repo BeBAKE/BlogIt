@@ -1,11 +1,12 @@
 import { useEffect } from "react"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import axios from "axios"
 import { BACKEND_URL, S3_URL } from "../../constants/backendURL"
 import { toast } from "react-toastify"
 // import { BlogsType } from "../../pages/BlogsHome"
 import publishedBlogAtom from "../../store/atoms/publishedBlogAtom"
 import publishedBlogFMAtom from "../../store/atoms/publishedBlogFMAtom"
+import jwtAtom from "../../store/atoms/jwtAtom"
 
 interface PBFloatingMenu {
   blogId : string,
@@ -16,6 +17,8 @@ interface PBFloatingMenu {
 const PublishedBlogFloatingMenu = ({blogId,index,imageName}:PBFloatingMenu)=>{
   const [blogs,setBlogs] = useRecoilState(publishedBlogAtom)
   const [pBFloatingMenu, setPBFloatingMenu] = useRecoilState(publishedBlogFMAtom(index))
+
+  const jwt = useRecoilValue(jwtAtom)
 
   const one = {
     // position: 'absolute',
@@ -54,28 +57,30 @@ const PublishedBlogFloatingMenu = ({blogId,index,imageName}:PBFloatingMenu)=>{
   },[pBFloatingMenu])
 
   const onDeleteBlog = async(e:React.UIEvent<HTMLParagraphElement>)=>{    
-    //@ts-ignore
-    const newBlogs = blogs.filter((bm,index)=>{
-      return index.toString() !== e.currentTarget.id
-    })
-    
-    setBlogs(newBlogs)
-    toast.success("Blog Deleted")
-    
-    const token = localStorage.getItem("jwt")??"invalidToken"
-    
     try {
+      if(jwt==="invalid") {
+        toast.error("invalid token")
+        throw new Error("invalid token")
+      }
+      
+      //@ts-ignore
+      const newBlogs = blogs.filter((bm,index)=>{
+        return index.toString() !== e.currentTarget.id
+      })
+      setBlogs(newBlogs)
+      toast.success("Blog Deleted")
+      
       await axios({
         url : `${BACKEND_URL}/api/v1/blog/${blogId}`,
         method : 'delete',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${jwt}`,
         }
       })
       await axios(`${S3_URL}/${imageName}`,{
         method : 'delete',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${jwt}`,
         }
       })
     } catch (error) {

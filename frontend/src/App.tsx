@@ -9,7 +9,7 @@ import ErrorPage from './pages/ErrorPage'
 import StatusBar from './components/StatusBar/StatusBar'
 import BlogsHome from './pages/BlogsHome'
 import CreateBlog from './pages/CreateBlog'
-import Test from "./pages/test"
+// import Test from "./pages/test"
 import { ToastContainer } from 'react-toastify'
 import MenuFullPage from './pages/MenuFullPage'
 import Bookmark from './components/Menu/Bookmark'
@@ -40,7 +40,7 @@ function App() {
       </Route>
       <Route element={<CreateBlog/>} path='/blogs/create/:id' />
       <Route element={<ErrorPage/>} path='/*'/>
-      <Route element={<Test/>} path="/test"/>        
+      {/* <Route element={<Test/>} path="/test"/>         */}
     </Routes>
   </Browser>
   

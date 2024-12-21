@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import axios from "axios"
 import { BACKEND_URL } from "../../constants/backendURL"
 
@@ -8,6 +8,7 @@ import draftAtom from "../../store/atoms/DraftsAtom"
 import draftFloatingMenuAtom from "../../store/atoms/DraftFloatingMenu"
 import { useNavigate } from "react-router-dom"
 import { Drafts } from "./Draft"
+import jwtAtom from "../../store/atoms/jwtAtom"
 
 interface DraftFloatingMenuProps {
   id : string,
@@ -17,6 +18,7 @@ interface DraftFloatingMenuProps {
 const DraftFloatingMenu = ({id,index}:DraftFloatingMenuProps)=>{
   const [drafts, setDrafts] = useRecoilState(draftAtom)
   const [draftFloatMenu, setDraftFloatMenu] = useRecoilState(draftFloatingMenuAtom(index))
+  const jwt = useRecoilValue(jwtAtom)
 
   const nav = useNavigate()
 
@@ -63,20 +65,25 @@ const DraftFloatingMenu = ({id,index}:DraftFloatingMenuProps)=>{
   },[draftFloatMenu])
 
   const onRemoveDraft = async(e:React.UIEvent<HTMLParagraphElement>)=>{    
-    //@ts-ignore
-    const newDrafts = drafts.filter((bm,index)=>{
-      return index.toString() !== e.currentTarget.id
-    })  as Drafts[]
-    setDrafts(newDrafts)
-    toast.success("drafted removed")
     
-    const token = localStorage.getItem("jwt")??"invalidToken"  
     try {
+      if(jwt==="invalid") {
+        toast.error("invalid token")
+        throw new Error("invalid token")
+      }
+
+      //@ts-ignore
+      const newDrafts = drafts.filter((bm,index)=>{
+        return index.toString() !== e.currentTarget.id
+      })  as Drafts[]
+      setDrafts(newDrafts)
+      toast.success("drafted removed")
+      
       await axios({
         url : `${BACKEND_URL}/api/v1/draft/${id}`,
         method : 'delete',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${jwt}`,
         }
       })
     } catch (error) {

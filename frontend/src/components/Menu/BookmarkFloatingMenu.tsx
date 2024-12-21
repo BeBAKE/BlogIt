@@ -1,11 +1,12 @@
 import { useEffect } from "react"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import { Bookmarks } from "./Bookmark"
 import BookmarkAtom from "../../store/atoms/bookmarksAtom"
 import axios from "axios"
 import { BACKEND_URL } from "../../constants/backendURL"
 import bookmarkFloatingMenuAtom from "../../store/atoms/bookmarkFloatingMenu"
 import { toast } from "react-toastify"
+import jwtAtom from "../../store/atoms/jwtAtom"
 
 interface BookmarkFloatingMenu {
   bookmarkId : string,
@@ -15,6 +16,7 @@ interface BookmarkFloatingMenu {
 const BookmarkFloatingMenu = ({bookmarkId,index}:BookmarkFloatingMenu)=>{
   const [bookmarks, setBookmarks] = useRecoilState(BookmarkAtom)
   const [bookmarkFloatMenu, setBookmarkFloatMenu] = useRecoilState(bookmarkFloatingMenuAtom(index))
+  const jwt = useRecoilValue(jwtAtom)
 
   // const arrow_up = {
   //   width: "0px",
@@ -62,22 +64,24 @@ const BookmarkFloatingMenu = ({bookmarkId,index}:BookmarkFloatingMenu)=>{
   },[bookmarkFloatMenu])
 
   const onRemoveBookmark = async(e:React.UIEvent<HTMLParagraphElement>)=>{    
-    //@ts-ignore
-    const newBookmarks  = bookmarks.filter((bm,index)=>{
-      return index.toString() !== e.currentTarget.id
-    }) as Bookmarks[]
-    
-    setBookmarks(newBookmarks)
-    toast.success("bookmarked removed")
-    
-    const token = localStorage.getItem("jwt")??"invalidToken"
-    
     try {
+      if(jwt==="invalid") {
+        toast.error("invalid token")
+        throw new Error("invalid token")
+      }
+
+      //@ts-ignore
+      const newBookmarks  = bookmarks.filter((bm,index)=>{
+        return index.toString() !== e.currentTarget.id
+      }) as Bookmarks[]
+      setBookmarks(newBookmarks)
+      toast.success("bookmarked removed")
+
       await axios({
         url : `${BACKEND_URL}/api/v1/blog/bookmark/${bookmarkId}`,
         method : 'delete',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${jwt}`,
         }
       })
     } catch (error) {

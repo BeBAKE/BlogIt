@@ -7,6 +7,9 @@ import { BACKEND_URL, S3_URL } from "../../constants/backendURL"
 import axios from "axios"
 import { toast } from "react-toastify"
 import { v4 as uuidv4 } from 'uuid';
+import { useRecoilValue } from "recoil"
+import jwtAtom from "../../store/atoms/jwtAtom"
+import ImagePlaceholder from "../../Logo/ImagePlaceholder"
 
 export type BlogProps = { 
   index : number,
@@ -21,12 +24,12 @@ export type BlogProps = {
   type ?: "PublishedBlog" | "Blog" | "Bookmark"
 } & CreatePostType
 
-type AxiosData = {
-  url : string,
-  method : string,
-  headers : Record<string,string>,
-  data ?: {id : string}
-}
+// type AxiosData = {
+//   url : string,
+//   method : string,
+//   headers : Record<string,string>,
+//   data ?: {id : string}
+// }
 
 const BlogCard = ({
   index,
@@ -47,16 +50,21 @@ const BlogCard = ({
   const [uuid, setUUID] = useState(uuidv4())
   const navigate = useNavigate()
   const [signedImage , setSignedImage] = useState(undefined)
+  const jwt = useRecoilValue(jwtAtom)
 
   useEffect(()=>{
     if(!imageName) return
     (async()=>{
       try {
+        if(jwt==="invalid") {
+          toast.error("invalid token")
+          throw new Error("invalid token")
+        }
         const res2 = await axios(`${S3_URL}/imageUrl/${imageName}`,{
           method : "get",
           headers : {
             "Content-Type" : "multipart/form-data",
-            Authorization : `Bearer ${localStorage.getItem("jwt")}`
+            Authorization : `Bearer ${jwt}`
           }
         })
         setSignedImage(res2.data.data) 
@@ -68,9 +76,8 @@ const BlogCard = ({
   
   const bookmarkService = {
     toggleBM : async(bookmarkId:string|undefined,documentId:string)=>{
-      const token = localStorage.getItem("jwt")
       const config = {
-        headers : { Authorization : `Bearer ${token}`}
+        headers : { Authorization : `Bearer ${jwt}`}
       } 
 
       return toggleBookmark
@@ -83,6 +90,9 @@ const BlogCard = ({
     if(isBookmarked===undefined) return
 
     try {
+      if(jwt==="invalid"){
+        throw new Error("invalid token")
+      }
       setToggleBookmark(!toggleBookmark)
       await bookmarkService.toggleBM(bookmarkId??uuid,documentId)
     } catch (error) {
@@ -155,11 +165,7 @@ const BlogCard = ({
         <img className="min-h-32 min-w-40 max-h-32 max-w-40 object-fill"
         src={signedImage} alt="Blog's Image"/>
       :
-        <div className="flex items-center justify-center min-h-32 min-w-40 max-h-32 max-w-40 bg-gray-200 dark:bg-gray-300 rounded sm:w-96">
-          <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-              <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-          </svg>
-        </div>
+        <ImagePlaceholder/>
       }
     </div>
   </section>

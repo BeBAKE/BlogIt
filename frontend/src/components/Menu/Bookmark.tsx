@@ -2,8 +2,10 @@ import { UIEvent, useState, useEffect } from "react";
 import BlogCard from "../Blogs/BlogCard";
 import axios from "axios";
 import { BACKEND_URL } from "../../constants/backendURL";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import BookmarkAtom from "../../store/atoms/bookmarksAtom";
+import jwtAtom from "../../store/atoms/jwtAtom";
+import { toast } from "react-toastify";
 
 export type Bookmarks = {
   blog : {
@@ -31,18 +33,24 @@ const Bookmark = ()=>{
   const [bookmarks, setBookmarks] = useRecoilState<Bookmarks[]>(BookmarkAtom)
   const [bookmarksFinished, setBookmarksFinished] = useState(false)
   const [loading, setLoading ] = useState(true)
+  const [isError , setIsError] = useState<boolean>(false)
+
   const [cursorInfo, setCursorInfo] = useState<CursorInfo>()
   const [sendRequestByScrolling, setSendRequestByScrolling] = useState(true)
+  const jwt = useRecoilValue(jwtAtom)
 
   useEffect(()=>{
-    const token = localStorage.getItem("jwt");    
     (async()=>{
-      try {       
+      try {  
+        if(jwt==="invalid") {
+          toast.error("invalid token")
+          throw new Error("invalid token")
+        }     
         const res = await axios({
           method: "post",
           url: `${BACKEND_URL}/api/v1/blog/bookmark/bulk`,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${jwt}`,
           }
         });
         const fetchedBookmark : Bookmarks[] = res.data.data
@@ -58,6 +66,7 @@ const Bookmark = ()=>{
         })
       } catch (error) {
         console.log(error)
+        setIsError(true)
       } finally {
         setLoading(false)
       }
@@ -75,16 +84,19 @@ const Bookmark = ()=>{
   
   const fetchBookmarks = async(position : number)=>{
     if(position===100 && bookmarksFinished===false){
-      const token = localStorage.getItem("jwt");  
       setSendRequestByScrolling(false)
       setLoading(true)
       try { 
+        if(jwt==="invalid") {
+          toast.error("invalid token")
+          throw new Error("invalid token")
+        }
         const res = await axios({
           method: "post",
           url: `${BACKEND_URL}/api/v1/blog/bookmark/bulk`,
           data : cursorInfo,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${jwt}`,
           }
         })   
         const fetchedBookmark : Bookmarks[] = res.data.data
@@ -112,29 +124,39 @@ const Bookmark = ()=>{
         Bookmarks
       </div>
 
-      <div>
+
       {
-        bookmarks.map((e:Bookmarks,index:number)=>{
-          const date = new Date((e.blog.createdAt)).toString().split(" ")
-          return ( 
-            <BlogCard
-              authorId={e.blog.authorId}
-              key={index}
-              index={index}
-              id={e.blog.authorId}//id - just to avoid error in BlogCard
-              summaryTitle={e.blog.summaryTitle}
-              summaryBody={e.blog.summaryBody}
-              date={date}
-              documentId={e.blogId}//also need in Bookmark.tsx to open that Blog
-              authorName={e.blog.authorName}
-              isBlog={false}
-              bookmarkId={e.id} // to send remove request
-              imageName={e.blog.image??undefined}
-            />
-          )
-        })
+        isError
+        ?
+        <div className="text-2xl font-extralight">
+          Oops! something went wrong
+        </div>
+        :
+        <div>
+        {
+          bookmarks.map((e:Bookmarks,index:number)=>{
+            const date = new Date((e.blog.createdAt)).toString().split(" ")
+            return ( 
+              <BlogCard
+                authorId={e.blog.authorId}
+                key={index}
+                index={index}
+                id={e.blog.authorId}//id - just to avoid error in BlogCard
+                summaryTitle={e.blog.summaryTitle}
+                summaryBody={e.blog.summaryBody}
+                date={date}
+                documentId={e.blogId}//also need in Bookmark.tsx to open that Blog
+                authorName={e.blog.authorName}
+                isBlog={false}
+                bookmarkId={e.id} // to send remove request
+                imageName={e.blog.image??undefined}
+              />
+            )
+          })
+        }
+        </div>
       }
-      </div>
+
 
       {/* Loader for cursor scrolling */}
       <div

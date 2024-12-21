@@ -1,10 +1,11 @@
 import { useEffect } from "react"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import axios from "axios"
 import { BACKEND_URL } from "../../constants/backendURL"
 import { toast } from "react-toastify"
 import blogFloatingMenuAtom from "../../store/atoms/blogFloatingMenu"
 import { useLocation } from "react-router-dom"
+import jwtAtom from "../../store/atoms/jwtAtom"
 
 interface BlogFloatingMenu {
   authorId : string,
@@ -14,6 +15,8 @@ interface BlogFloatingMenu {
 
 const BlogFloatingMenu = ({authorId,index}:BlogFloatingMenu)=>{
   const [blogFloatingMenu, setBlogFloatingMenu] = useRecoilState(blogFloatingMenuAtom(index))
+  const jwt = useRecoilValue(jwtAtom)
+
   const { pathname } = useLocation()
 
   const one = {
@@ -53,14 +56,17 @@ const BlogFloatingMenu = ({authorId,index}:BlogFloatingMenu)=>{
   },[blogFloatingMenu])
 
   const onFollow = async()=>{
-    const token = localStorage.getItem("jwt")??"invalidToken"
     try {
+      if(jwt==="invalid") {
+        toast.error("invalid token")
+        throw new Error("invalid token")
+      }
       await axios({
         url : `${BACKEND_URL}/api/v1/social/following`,
         method : 'post',
         data : {followingId : authorId},
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${jwt}`,
         }
       })
       toast.success("Author followed")
@@ -71,14 +77,17 @@ const BlogFloatingMenu = ({authorId,index}:BlogFloatingMenu)=>{
   }
 
   const onUnfollow = async()=>{    
-    const token = localStorage.getItem("jwt")??"invalidToken"
     try {
+      if(jwt==="invalid") {
+        toast.error("invalid token")
+        throw new Error("invalid token")
+      }
       await axios({
         url : `${BACKEND_URL}/api/v1/social/following`,
         method : 'delete',
         data : {followingId : authorId},
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${jwt}`,
         }
       })
       toast.success("Author Unfollowed")

@@ -13,6 +13,8 @@ import { BACKEND_URL } from "../constants/backendURL"
 
 import { jwtDecode } from "jwt-decode";
 import { AutorJwtPayload } from "./Signin"
+import jwtAtom from "../store/atoms/jwtAtom"
+import { useSetRecoilState } from "recoil"
 
 const Signin = () => {
   const navigate = useNavigate()
@@ -22,6 +24,7 @@ const Signin = () => {
     password : "",
   })
   const [isFirstRequest, setIsFirstRequest] = useState<boolean>(true)
+  const setJwt = useSetRecoilState(jwtAtom)
 
   const submit = useCallback(async()=>{
     if(!isFirstRequest) return
@@ -43,10 +46,13 @@ const Signin = () => {
               fullname : formData.fullname.trim()
             }
           })
-          localStorage.setItem("jwt",res.data.data)
-  
-          const decoded = jwtDecode(localStorage.getItem("jwt") as string) as AutorJwtPayload
+          const token = res.data.data as string
+          setJwt(token)
+          localStorage.setItem("jwt",token)  
+
+          const decoded = jwtDecode(token as string) as AutorJwtPayload
           localStorage.setItem("userName",decoded.authorName)
+          localStorage.setItem("userId",decoded.authorId) 
           navigate("/blogs") 
         } catch (error:any) {
           setIsFirstRequest(prev=>!prev)

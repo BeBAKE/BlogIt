@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo } from "react"
+import { memo, useMemo } from "react"
 import Logo from "./Logo"
 import WriteLogo from "./WriteLogo"
 import ProfilePic from "./ProfilePic"

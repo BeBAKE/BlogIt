@@ -2,10 +2,11 @@ import axios from "axios";
 import Quill, { Delta } from "quill/core";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { publishBtnStatusAtom } from "../../store/atoms/publishBtnStatus";
 import { BACKEND_URL, S3_URL } from "../../constants/backendURL";
 import coverPhotoAtom from "../../store/atoms/coverPhotoAtom";
+import jwtAtom from "../../store/atoms/jwtAtom";
 
 export interface PublishBtnProp {
   documentId: string,
@@ -20,7 +21,7 @@ const PublishBtn = ({documentId,titleQuill,bodyQuill}:PublishBtnProp)=>{
   const [ publishBtnStatus, setPublishBtnStatus] = useRecoilState(publishBtnStatusAtom)
   const [coverPhoto,setCoverPhoto] = useRecoilState(coverPhotoAtom)
 
-
+  const jwt = useRecoilValue(jwtAtom)
 
   const publish = () => {
     if(publishBtnStatus===false) return
@@ -37,6 +38,10 @@ const PublishBtn = ({documentId,titleQuill,bodyQuill}:PublishBtnProp)=>{
       if(!title && !body) return
 
       try {
+        if(jwt==="invalid") {
+          toast.error("invalid token")
+          throw new Error("invalid token")
+        }
         const data = {
           id : documentId,
           title : title as Delta,
@@ -45,7 +50,7 @@ const PublishBtn = ({documentId,titleQuill,bodyQuill}:PublishBtnProp)=>{
         const res = await axios(`${BACKEND_URL}/api/v1/blog/${documentId}`,{
           method : "post",
           headers : {
-            Authorization : `Bearer ${localStorage.getItem("jwt")}`
+            Authorization : `Bearer ${jwt}`
           },
           data : data
         })
@@ -61,7 +66,7 @@ const PublishBtn = ({documentId,titleQuill,bodyQuill}:PublishBtnProp)=>{
             data : formData,
             headers : {
               "Content-Type" : "multipart/form-data",
-              Authorization : `Bearer ${localStorage.getItem("jwt")}`
+              Authorization : `Bearer ${jwt}`
             }
           })
         }
