@@ -36,12 +36,13 @@ export const useQuillTextChange = (
   //! to set titleQuill text-change
   useEffect(()=>{
     if(!socket || !titleQuill || !bodyQuill ) return 
-
+    //@ts-ignore
     const titleQuillTextHandler = (delta:Delta,oldDelta:Delta,source:string)=>{
       if(source!=='user') return  
       debouncing("title",intervalIdTitle,titleQuill)//! db saving
       // socket.emit("text-change",delta) //! collab  
     }
+    //@ts-ignore
     const bodyQuillTextHandler = (delta:Delta,oldDelta: Delta,source: string)=>{
       if(source!=='user') return  
       debouncing("body",intervalIdBody,bodyQuill)//! db saving

@@ -6,7 +6,7 @@ import { useSocket } from "../../hooks/useSocket";
 import { useQuill } from "../../hooks/useQuill";
 import { useGetDocument } from "../../hooks/useGetDocument";
 import { useQuillTextChange } from "../../hooks/useQuillTextChange";
-import { Dispatch, useEffect, useRef } from "react";
+import { Dispatch, useRef } from "react";
 import Quill from "quill/core";
 import { useRecoilState } from "recoil";
 import coverPhotoAtom from "../../store/atoms/coverPhotoAtom";

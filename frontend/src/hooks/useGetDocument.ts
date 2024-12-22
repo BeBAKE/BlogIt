@@ -32,11 +32,13 @@ export const useGetDocument = ({socket,documentId,titleQuill,bodyQuill}:GetDocum
       bodyQuill.setContents(content?.body)//content.body
     })
 
+    //@ts-ignore
     socket.on("saved",(msg)=>{
       // console.log("saved : ",msg)
     })
 
     return ()=>{
+      //@ts-ignore
       socket.off("saved",(msg)=>{
       // console.log(msg)
       })

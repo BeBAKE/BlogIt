@@ -90,11 +90,11 @@
 import { useEffect } from "react";
 import Quill from "quill";
 
-interface UseQuillProps {
-  titleContainerRef : React.RefObject<HTMLDivElement>,
-  bodyContainerRef : React.RefObject<HTMLDivElement>
-}
-
+// interface UseQuillProps {
+//   titleContainerRef : React.RefObject<HTMLDivElement>,
+//   bodyContainerRef : React.RefObject<HTMLDivElement>
+// }
+//@ts-ignore
 export const useQuill = ({titleContainerRef,bodyContainerRef,titleQuill,bodyQuill,setTitleQuill,setBodyQuill}:any)=>{
 
 

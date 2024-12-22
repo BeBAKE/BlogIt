@@ -47,6 +47,7 @@ const BlogCard = ({
 }:BlogProps)=>{
 
   const [toggleBookmark, setToggleBookmark] = useState<boolean|undefined>(isBookmarked)
+  //@ts-ignore
   const [uuid, setUUID] = useState(uuidv4())
   const navigate = useNavigate()
   const [signedImage , setSignedImage] = useState(undefined)
