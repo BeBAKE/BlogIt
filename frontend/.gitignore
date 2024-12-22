@@ -12,8 +12,11 @@ dist
 dist-ssr
 *.local
 
-backendURL.ts
 test.tsx
+
+# env
+.env
+.env.production
 
 # Editor directories and files
 .vscode/*

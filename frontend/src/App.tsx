@@ -25,8 +25,9 @@ function App() {
   <Browser>
     <Routes>
       <Route element={<Landing/>}>  
-        <Route element={<Signin/>} path='/signin' index/>
-        <Route element={<Signup/>} path='/signup'/>
+        <Route element={<Signup/>} index />
+        <Route element={<Signup/>} path='/signup' />
+        <Route element={<Signin/>} path='/signin' />
       </Route>
       <Route element={<StatusBar/>}>
         <Route element={<BlogsHome/>} path='/blogs' index/>

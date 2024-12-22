@@ -90,13 +90,13 @@ export const MenuSectionBottom = ()=>{
   const nav = useNavigate()
 
   const logout = useCallback(()=>{
+    localStorage.clear()
+    setJwt("")
+    nav('/signin',{replace : true})
     if(jwt==="invalid") {
       toast.error("invalid token")
       return
     }
-    localStorage.clear()
-    setJwt("")
-    nav('/signin',{replace : true})
     toast.success("User logged out")
   },[])
 
