@@ -16,6 +16,7 @@ export const httpAuth =async(req:Request,res:Response,next:NextFunction)=>{
     const payload = jwt.verify(token as string,JWT_SECRET)
     next();
   } catch (error) {
+    console.log(error)
     return res.status(401).json({success : false,message : "Unauthorized"})
   }
 }

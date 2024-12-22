@@ -70,19 +70,21 @@ const PublishedBlogFloatingMenu = ({blogId,index,imageName}:PBFloatingMenu)=>{
       setBlogs(newBlogs)
       toast.success("Blog Deleted")
       
-      await axios({
-        url : `${BACKEND_URL}/api/v1/blog/${blogId}`,
-        method : 'delete',
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        }
-      })
-      await axios(`${S3_URL}/${imageName}`,{
-        method : 'delete',
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        }
-      })
+      await Promise.all([
+        axios({
+          url : `${BACKEND_URL}/api/v1/blog/${blogId}`,
+          method : 'delete',
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          }
+        }),
+        axios(`${S3_URL}/${imageName}`,{
+          method : 'delete',
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          }
+        })
+      ])
     } catch (error) {
       console.log(error)
     }

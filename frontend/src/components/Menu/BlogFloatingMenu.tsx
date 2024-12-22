@@ -92,7 +92,7 @@ const BlogFloatingMenu = ({authorId,index}:BlogFloatingMenu)=>{
       })
       toast.success("Author Unfollowed")
     } catch (error:any) {
-      if(error?.response.data.message) toast.error("Author already unfollowed")
+      if(error?.response.data.message) toast.error("Author not followd")
       console.log(error)
     }
   }
