@@ -14,7 +14,7 @@ class WSS {
     // Initialize the Socket.IO server
     this.wss = new SocketIOServer(server, {
       cors: {
-        origin: "http://localhost:5173",
+        origin: process.env.ALLOWED_ORIGIN,
         methods: ["GET", "POST"]
       },
     });
