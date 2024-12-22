@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bash ./node_modules/typescript-runner/tsRunner.sh"
+    "dev": "bash ./node_modules/typescript-runner/tsRunner.sh",
+    "build" : "npx tsc -b",
+    "start" : "node dist/index.js"
   },
   "keywords": [],
   "author": "",
