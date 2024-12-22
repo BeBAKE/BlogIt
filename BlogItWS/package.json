@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bash ./node_modules/typescript-runner/tsRunner.sh",
-    "build" : "npx tsc -b",
-    "start" : "node dist/index.js"
+    "build": "npx tsc -b",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +14,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.699.0",
     "@aws-sdk/s3-request-presigner": "^3.701.0",
-    "@bebake/blogit-common": "^1.0.9",
+    "@bebake/blogit-common": "^1.1.0",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/multer": "^1.4.12",

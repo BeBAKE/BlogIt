@@ -55,7 +55,7 @@ export const deltaSchema = z.object({
 
       "list" : z.string(),
 
-      "blockquote" : z.string(),
+      "blockquote" : z.string().or(z.boolean()),
 
       "code-block" : z.string()
 
