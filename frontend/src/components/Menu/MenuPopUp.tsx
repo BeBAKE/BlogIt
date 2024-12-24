@@ -33,7 +33,7 @@ const MenuPopUp = ()=>{
       ${isMenuOpen ? "block" : "hidden"}
       shadow-[0px_0px_4px_1px_rgb(0,0,0,0.35)] 
       absolute right-6 top-14
-      h-fit w-64`}>
+      h-fit w-64 z-10`}>
         <MenuSection1 gap={"2"}/>
         <MenuSectionBreak/>
         <MenuSectionBottom/>
