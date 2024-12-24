@@ -57,6 +57,7 @@ function App() {
     draggable
     pauseOnHover={false}
     theme="light"
+    className={"w-fit mt-3 mx-2 sm:mx-auto sm:mt-auto text-sm sm:text-base"}
     />
   </>
   )

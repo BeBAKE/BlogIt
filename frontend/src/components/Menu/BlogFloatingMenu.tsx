@@ -102,10 +102,10 @@ const BlogFloatingMenu = ({authorId,index}:BlogFloatingMenu)=>{
   return (
     <div 
     id="BmFloatingMenu"
-    className={`${blogFloatingMenu ? "visible":"invisible"} w-40 h-20 absolute top-6 right-[-4.375rem] z-10 flex flex-col items-center gap-0 justify-center`}>
+    className={`${blogFloatingMenu ? "visible":"invisible"} w-40 h-20 absolute top-6 right-[-4.375rem] z-10 flex flex-col items-center gap-0 justify-center mx-14 md:mx-0`}>
 
       {/* top arrow */}
-      <div style={one} className="relative"></div>
+      <div style={one} className="relative hidden md:block"></div>
       <div style={{ ...two, top: 4}} className="absolute"></div>
 
       {/* real body */}

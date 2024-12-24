@@ -27,14 +27,15 @@ const CreateBlog = ()=>{
 
   return (
   <section
-    className="mx-auto max-w-[1000px] my-3">
+    className="mx-3 lg:mx-auto lg:max-w-[1000px] my-3">
     <header
-      className="flex flex-row items-center justify-between mb-12">
+      id="CreateBlogStatusBar"
+      className="flex flex-row items-center justify-between md:mb-12 mb-10">
         <div
           className="flex flex-row items-center gap-3">
           <Logo/>
-          <h1 className="text-sm"
-          >Draft for {userName}</h1>
+          <h1 className="text-xs md:text-sm"
+          >Draft for {userName.split(" ")[0].substring(0,15)}</h1>
         </div>
         <div
           className="flex flex-row items-center gap-6">

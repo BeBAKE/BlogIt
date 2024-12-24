@@ -94,10 +94,10 @@ const BookmarkFloatingMenu = ({bookmarkId,index}:BookmarkFloatingMenu)=>{
   return (
     <div 
     id="BmFloatingMenu"
-    className={`${bookmarkFloatMenu ? "visible":"invisible"} w-40 h-20 absolute top-6 right-[-4.375rem] z-10 flex flex-col items-center gap-0 justify-center`}>
+    className={`${bookmarkFloatMenu ? "visible":"invisible"} w-40 h-20 absolute top-6 right-1 md:right-[-4.375rem] z-10 flex flex-col items-center gap-0 justify-center md:mx-0`}>
 
       {/* top arrow */}
-      <div style={one} className="relative"></div>
+      <div style={one} className="relative hidden md:block"></div>
       <div style={{ ...two, top: 4}} className="absolute"></div>
 
       {/* real body */}

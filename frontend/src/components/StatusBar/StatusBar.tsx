@@ -31,13 +31,14 @@ const StatusBar = memo(()=>{
     <>
     
       <section
-        className="flex flex-row justify-between mx-6 py-2 px-2 border-b-[1px] border-gray-200">
+        className="flex flex-row justify-between mx-2 md:mx-6 py-2 md:px-2 border-b-[1px] border-gray-200">
+
         <div 
           className="flex flex-row items-center gap-4">
           <Logo/>
           <input 
             placeholder="Search"
-            className="rounded-3xl h-10 p-4 ps-8 text-sm outline-none"
+            className="rounded-3xl h-10 p-4 ps-8 text-sm outline-none hidden md:block"
             style={searchIcon}
           />
         </div>

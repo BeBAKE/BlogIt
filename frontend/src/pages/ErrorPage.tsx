@@ -1,8 +1,8 @@
-import notFound from "../assets/notFound.png"
+import errorImg from "../assets/errorImg.svg"
 
 const ErrorPage = ()=>{
   const style={  
-    background: `url(${notFound})`,
+    background: `url(${errorImg})`,
     backgroundPosition: 'center',
     backgroundSize: 'fill',
     backgroundRepeat: 'repeat'

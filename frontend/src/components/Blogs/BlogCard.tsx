@@ -107,35 +107,35 @@ const BlogCard = ({
     className={`h-fit py-10 flex flex-row items-center justify-between gap-8 md:gap-20 md:max-w-[675px] lg:max-w-[925px] ${index!==0 ? "border-t-[1px]" : ""} mx-auto`}>
     <div 
       id="blogInfo"
-      className="flex flex-col gap-5 w-4/5">
+      className="flex flex-col gap-5 w-full md:w-4/5">
 
       <nav className="flex flex-row justify-start items-center gap-3">
         <ProfilePic authorName={authorName}/>
-        <h3 className="font-light text-sm">
+        <h3 className="font-light text-xs md:text-sm">
           {authorName}
         </h3>
-        <h4 className="text-neutral-500 font-light text-sm">
+        <h4 className="text-neutral-500 font-light text-xs md:text-sm">
           {`${date[1]} ${date[2]}, ${date[3]}`}
         </h4>
       </nav>
 
       <main className="flex flex-col gap-2"
         onClick={()=>navigate(`/blogs/${documentId}`)}>
-        <p className="font-bold text-xl">{summaryTitle}</p>
-        <p className="text-base text-neutral-500 mb-4">{summaryBody.substring(0,130)}</p>
+        <p className="text-lg md:text-xl font-bold ">{summaryTitle}</p>
+        <p className="text-sm md:text-base text-neutral-500 mb-4">{summaryBody.substring(0,130)}</p>
       </main>
 
       <footer className="flex flex-row justify-between items-center">
         <div>
           {/* place holder for tag */}
-          <p className="text-neutral-500 text-sm">3 min read</p>
+          <p className="text-neutral-500 text-xs md:text-sm">3 min read</p>
         </div>
 
         <div className="flex flex-row gap-3">
-          {/* Bookmark logo className="size-6"*/} 
+          {/* Bookmark logo */} 
           <svg 
             onClick={onClickBookmark}
-            className={`${isBlog ? "visible" : "invisible"} size-5 ${toggleBookmark?"fill-black":"text-neutral-500 hover:text-neutral-800"} `}
+            className={`${isBlog ? "visible" : "invisible"} size-4 md:size-5 ${toggleBookmark?"fill-black":"text-neutral-500 hover:text-neutral-800"} `}
             fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
           </svg>

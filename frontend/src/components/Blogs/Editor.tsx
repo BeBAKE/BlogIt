@@ -93,11 +93,11 @@ const Editor = ({ documentId,titleQuill,bodyQuill,setTitleQuill,setBodyQuill } :
           <div className="flex flex-row items-center gap-6">
             <button 
               onClick={()=>fileRef.current?.click()}
-              className="ms-4 text-sm bg-gray-800 active:bg-gray-600 text-white h-7 w-20 rounded-xl">
+              className="ms-4 text-xs md:text-sm bg-gray-800 active:bg-gray-600 text-white md:h-7 h-6 w-20 rounded-xl">
               Add cover
-            </button>
+            </button>{/*h-7 w-20 */}
             <span 
-              className={`${file ? "text-green-800" : 'text-red-800'} text-sm`}>
+              className={`${file ? "text-green-800" : 'text-red-800'} text-xs md:text-sm`}>
               {file ? "Cover Uploaded" : "No Cover Picture"}
             </span>
           </div>

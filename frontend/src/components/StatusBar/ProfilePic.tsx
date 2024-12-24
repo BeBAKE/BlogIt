@@ -14,7 +14,7 @@ const ProfilePic = memo(({ authorName, id } : ProfilePicProps)=>{
 
   return <>
     <p id={id?id:"genericProfilePic"}
-    className="bg-black text-white rounded-[100%] min-h-8 min-w-8 max-h-8 max-w-8 flex flex-row justify-center items-center" onClick={menuStatus}>
+    className="bg-black text-white rounded-[100%] h-7 w-7 md:h-8 md:w-8 flex flex-row justify-center items-center text-xs md:text-base" onClick={menuStatus}>
       {authorName.split("")[0].toUpperCase()}
     </p>
   </>

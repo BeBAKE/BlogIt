@@ -65,7 +65,7 @@ const More = memo((
       onClick={type==="PublishedBlog"
         ? onMoreClickForPublishedBlog 
         : (isBlog ? onMoreClickForBlog : onMoreClickForBookmark) }
-      className={`${w ? "w-"+w : "w-5" } fill-current text-neutral-500 
+      className={`${w ? "w-"+w : "w-4 md:w-5" } fill-current text-neutral-500 
       ${(hover===true || hover===undefined) ? "hover:text-neutral-800" : ""}`}>
       <g id="moreIcon">
         <path id="moreIcon" d="M25,80C11.215,80,0,91.215,0,105s11.215,25,25,25c13.785,0,25-11.215,25-25S38.785,80,25,80z"/>

@@ -8,7 +8,7 @@ const BlogSkeleton = () => {
 
   return (
   <section
-    className="flex flex-col md:flex-row ms-24 mt-16 me-8 gap-8 h-full justify-evenly animate-pulse mb-10">
+      className="flex flex-col md:flex-row ms-6 mt-8 me-6 md:ms-16 lg:ms-24 md:mt-16 md:me-8 gap-8 h-full justify-evenly mb-10 animate-pulse">
 
     <div className="flex flex-col gap-4">
       <h1 className="h-10 bg-gray-200 dark:bg-gray-400 rounded-full w-[350px] md:w-[450px] lg:w-[682px] 2xl:w-[890px]"></h1> {/* title */}

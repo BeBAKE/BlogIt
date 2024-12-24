@@ -90,7 +90,7 @@ const PublishBtn = ({documentId,titleQuill,bodyQuill}:PublishBtnProp)=>{
     <>
     <button
       onClick={publish}
-      className={`text-[12px] text-white 
+      className={`text-[10px] md:text-[12px] text-white 
         ${publishBtnStatus ? "bg-[rgb(65,135,45)]" : "bg-[rgb(207,230,202)]"}
         active:bg-[rgb(41, 85, 28)]
         rounded-xl px-2.5 py-[4px]`}>

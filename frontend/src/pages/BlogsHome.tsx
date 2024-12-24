@@ -73,7 +73,7 @@ const BlogsHome = ()=>{
 
   return (
   <section
-    className="m-12 flex flex-col items-center h-screen">
+    className="my-12 mx-6 md:m-12 flex flex-col items-center h-screen">
 
       <div id="top"
       className="flex flex-row justify-start items-center w-full md:w-[675px] lg:w-[925px] pb-4 border-b-[1px] gap-7 text-sm">

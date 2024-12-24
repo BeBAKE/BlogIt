@@ -16,7 +16,7 @@ import { AutorJwtPayload } from "./Signin"
 import jwtAtom from "../store/atoms/jwtAtom"
 import { useSetRecoilState } from "recoil"
 
-const Signin = () => {
+const Signup = () => {
   const navigate = useNavigate()
   const [formData,setFormData] = useState<SignupType>({
     fullname : "",
@@ -72,18 +72,18 @@ const Signin = () => {
       id="form-space" 
       className="flex flex-row justify-center items-center w-full md:w-1/2 h-screen px-6">
       <div 
-        id="signin-form"
-        className="flex flex-col bg-white h-fit w-96 items-center">
+        id="signup-form"
+        className="flex flex-col bg-white h-fit md:w-96 items-center">
 
-          <h1 className="text-4xl font-bold mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
             Create an account
           </h1>
-          <h3 className="text-neutral-500 mb-8">
+          <h3 className="text-neutral-500 mb-8 md:text-base text-sm">
             Already have an account? <Link to={`/signin`}><u>Login</u></Link>
           </h3>
-          <div id="signin-form-inputs" className="flex flex-col w-full gap-2.5">
+          <div id="signup-form-inputs" className="flex flex-col w-full gap-2.5">
 
-            <InputForm id="fullname" placeholder="Enter your fullname" label="fullname" 
+            <InputForm id="fullname" placeholder="Enter your fullname" label="Full name" 
             onChange={(e)=>{
               setFormData(prev => prev={...prev,fullname:e.target.value})
             }}
@@ -115,4 +115,4 @@ const Signin = () => {
 
 
 
-export default Signin
+export default Signup

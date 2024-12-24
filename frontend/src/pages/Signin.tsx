@@ -76,13 +76,13 @@ const Signin = () => {
       className="flex flex-row justify-center items-center md:w-1/2 h-screen px-6 w-full">
       <div 
         id="signin-form"
-        className="flex flex-col bg-white h-fit w-96 items-center">
+        className="flex flex-col bg-white h-fit md:w-96 items-center -translate-y-10">
 
-          <h1 className="text-4xl font-bold mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
             Login 
           </h1>
-          <h3 className="text-neutral-500 mb-8">
-            Don't have an account? <Link to={`/signup`}><u>Sing up</u></Link>
+          <h3 className="text-neutral-500 mb-8 md:text-base text-sm">
+            Don't have an account? <Link to={`/signup`}><u>Sign up</u></Link>
           </h3>
           <div id="signin-form-inputs" className="flex flex-col w-full gap-2.5">
 

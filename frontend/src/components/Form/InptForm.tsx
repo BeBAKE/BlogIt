@@ -13,7 +13,7 @@ const InputForm = React.memo(({id, placeholder, label, onChange, type}: InputFor
   const [showPassword, setShowPassword] = useState(false)
   
   return <>
-    <label className="font-semibold">
+    <label className="font-semibold text-sm md:text-base">
       {label}
     </label>
     <div className="relative">

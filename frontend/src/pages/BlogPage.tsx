@@ -105,10 +105,11 @@ const BlogPage = () => {
         ? 
         ( <BlogSkeleton/> ) 
         : 
-        (<section
-        className="flex flex-col md:flex-row ms-24 mt-16 me-8 gap-8 h-full justify-evenly mb-10">
+        (
+      <section
+        className="flex flex-col md:flex-row ms-6 mt-8 me-6 md:ms-16 lg:ms-24 md:mt-16 md:me-8 gap-8 h-full justify-evenly mb-10">
 
-        <div className="flex flex-col gap-4 w-[350px] md:w-[450px]  lg:w-[682px] 2xl:w-[890px] items-start">{/* 2xl:max-w-[890px] */}
+        <div className="flex flex-col gap-4 w-full sm-w-1/2 md:w-[450px]  lg:w-[682px] 2xl:w-[890px] md:items-start">{/* 2xl:max-w-[890px] */}
           <div>
             <ReadOnlyEditor content={blogDetail.title} id="title"/>
           </div>
@@ -118,7 +119,7 @@ const BlogPage = () => {
           </h3>
 
 
-          <img className={`h-64 w-80 object-fill self-center my-6 ${signedImage?"block":"hidden"} `}
+          <img className={`h-40 w-56 md:h-64 md:w-80 object-fill self-center my-6 ${signedImage?"block":"hidden"} `}
           src={signedImage} alt="Blog's Image"/>
 
           <div

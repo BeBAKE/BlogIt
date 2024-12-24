@@ -6,6 +6,8 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import BookmarkAtom from "../../store/atoms/bookmarksAtom";
 import jwtAtom from "../../store/atoms/jwtAtom";
 import { toast } from "react-toastify";
+import Spinner from "../../Logo/Spinner";
+import NoBlogs from "./NoBlogs";
 
 export type Bookmarks = {
   blog : {
@@ -34,6 +36,7 @@ const Bookmark = ()=>{
   const [bookmarksFinished, setBookmarksFinished] = useState(false)
   const [loading, setLoading ] = useState(true)
   const [isError , setIsError] = useState<boolean>(false)
+  const [isEmpty, setIsEmpty] = useState(false)
 
   const [cursorInfo, setCursorInfo] = useState<CursorInfo>()
   const [sendRequestByScrolling, setSendRequestByScrolling] = useState(true)
@@ -55,7 +58,8 @@ const Bookmark = ()=>{
         });
         const fetchedBookmark : Bookmarks[] = res.data.data
         if(fetchedBookmark.length===0) {
-          setBookmarksFinished(true)
+          setBookmarksFinished(true) // so that no req go when scrolling
+          setIsEmpty(true)
           return
         }
         setBookmarks(fetchedBookmark)
@@ -119,8 +123,8 @@ const Bookmark = ()=>{
   }
 
   return (
-    <div className="w-full h-screen flex flex-col justify-start items-center mx-12 overflow-y-scroll" onScroll={scrolling}>
-      <div className="text-4xl font-bold self-center mb-16">
+    <div className="h-screen flex flex-col justify-start items-center overflow-y-scroll" onScroll={scrolling}>
+      <div className="text-3xl md:text-4xl font-bold self-center mb-10 md:mb-16">
         Bookmarks
       </div>
 
@@ -128,40 +132,44 @@ const Bookmark = ()=>{
       {
         isError
         ?
-        <div className="text-2xl font-extralight">
-          Oops! something went wrong
-        </div>
+        <div className="text-2xl font-extralight h-96 w-full flex flex-row items-center justify-center">Oops! something went wrong</div>
         :
-        <div>
-        {
-          bookmarks.map((e:Bookmarks,index:number)=>{
-            const date = new Date((e.blog.createdAt)).toString().split(" ")
-            return ( 
-              <BlogCard
-                authorId={e.blog.authorId}
-                key={index}
-                index={index}
-                id={e.blog.authorId}//id - just to avoid error in BlogCard
-                summaryTitle={e.blog.summaryTitle}
-                summaryBody={e.blog.summaryBody}
-                date={date}
-                documentId={e.blogId}//also need in Bookmark.tsx to open that Blog
-                authorName={e.blog.authorName}
-                isBlog={false}
-                bookmarkId={e.id} // to send remove request
-                imageName={e.blog.image??undefined}
-              />
-            )
-          })
-        }
-        </div>
+        (
+          isEmpty
+          ?
+          <NoBlogs label={"Bookmarked Blogs will be shown here"}/>
+          :
+          <div>
+          {
+            bookmarks.map((e:Bookmarks,index:number)=>{
+              const date = new Date((e.blog.createdAt)).toString().split(" ")
+              return ( 
+                <BlogCard
+                  authorId={e.blog.authorId}
+                  key={index}
+                  index={index}
+                  id={e.blog.authorId}//id - just to avoid error in BlogCard
+                  summaryTitle={e.blog.summaryTitle}
+                  summaryBody={e.blog.summaryBody}
+                  date={date}
+                  documentId={e.blogId}//also need in Bookmark.tsx to open that Blog
+                  authorName={e.blog.authorName}
+                  isBlog={false}
+                  bookmarkId={e.id} // to send remove request
+                  imageName={e.blog.image??undefined}
+                />
+              )
+            })
+          }
+          </div>
+        )
       }
 
 
       {/* Loader for cursor scrolling */}
       <div
-      className={`text-xl ${!loading ? "hidden" : "flex flex-row justify-center items-center"}`}>
-        Loading...
+      className={`text-xl ${!loading ? "hidden" : "flex flex-row justify-center items-center"} mt-10`}>
+        <Spinner/>
       </div>
 
     
