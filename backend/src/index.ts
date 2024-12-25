@@ -14,7 +14,7 @@ declare module 'hono' {
 const app = new Hono<{Bindings : Bindings}>()
 
 app.use('/api/v1/*',cors({
-  origin : '*',
+  origin : "https://blogit.projectlive.me",
 }))
 
 

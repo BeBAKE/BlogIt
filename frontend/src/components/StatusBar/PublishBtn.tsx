@@ -74,11 +74,12 @@ const PublishBtn = ({documentId,titleQuill,bodyQuill}:PublishBtnProp)=>{
         setPublishBtnStatus(false)
         setCoverPhoto(undefined)
         nav("/blogs")
-      } catch (error) {
+      } catch (error : any) {
         titleQuill.enable()
         bodyQuill.enable()
         setPublishBtnStatus(true)
         console.log("error while publishing : ",error)
+        toast.error(error.response.data.message)
       }
     }
 
